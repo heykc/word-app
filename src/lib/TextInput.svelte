@@ -5,7 +5,7 @@
 </script>
 
 <form
-  class="w-100 grid place-items-center"
+  class="w-100 grid place-items-center relative"
   on:submit|preventDefault={submitGuess}
 >
   <label for="guess" class="hidden">
@@ -22,11 +22,13 @@
     "
     bind:value={text}
   />
-  <div>
-    {#if incorrect && !text}
-      <p class="text-sm text-center text-red-400 font-bold pt-2">
-        Sorry, try again!
-      </p>
-    {/if}
+  <div
+    class="
+      transform-all duration-200 absolute 
+      {(incorrect && !text) ? 'opacity-100 top-14' : 'opacity-0 top-10'}
+  ">
+    <p class="text-sm text-center text-red-400 font-bold pt-2">
+      Sorry, try again!
+    </p>
   </div>
 </form>
