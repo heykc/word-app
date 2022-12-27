@@ -1,5 +1,6 @@
 <script>
   import TextInput from '$lib/TextInput.svelte';
+  import Icon from '$lib/Icon.svelte';
   export let data;
 
   const resultEnum = {
@@ -9,7 +10,8 @@
     CORRECT: 'correct',
   };
 
-  let attempts = [];
+  let attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', answer: '' }));
+  let attempt = 0;
   let result = resultEnum.GUESSING;
   let guess = '';
   let incorrectGuess = false;
@@ -17,18 +19,29 @@
   $: selectedWord = data?.body?.selectedWord;
 
   const submitGuess = () => {
+    const newGuess = attempts.find(({id}) => id === attempt);
+    newGuess.guess = guess;
+
     if (guess === selectedWord.word) {
       result = resultEnum.CORRECT
-      attempts = [...attempts, { guess, correct: true }]
+      newGuess.answer = 'correct';
+      attempts[attempt] = newGuess;
+      attempt++;
     } else if (selectedWord.synonyms.includes(guess)) {
       result = resultEnum.SIMILAR;
-      attempts = [...attempts, { guess, correct: true }]
-    } else if (attempts.length === 2) {
+      newGuess.answer = 'similar';
+      attempts[attempt] = newGuess;
+      attempt++;
+    } else if (attempt === 2) {
       result = resultEnum.FAILED;
-      attempts = [...attempts, { guess, correct: false }]
+      newGuess.answer = 'incorrect';
+      attempts[attempt] = newGuess;
+      attempt++;
     } else {
       incorrectGuess = true;
-      attempts = [...attempts, { guess, correct: false }]
+      newGuess.answer = 'incorrect';
+      attempts[attempt] = newGuess;
+      attempt++;
       guess = '';
     }
   }
@@ -37,21 +50,32 @@
 <main class="p-3">
   {#if result === resultEnum.GUESSING}
     {#if selectedWord}
+      <div class="flex flex-row-reverse justify-center gap-2">
+        {#each attempts as {id, answer} (id)}
+          {@const name = answer === 'incorrect' ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
+          {@const classNames = answer === 'incorrect' ? 'text-zinc-400' : 'text-red-400'}
+          <Icon {name} {classNames} />
+        {/each}
+      </div>
       <div class="bg-slate-100/90 rounded-sm text-zinc-900 p-2 mt-5 mb-5">
-        <p class="italic font-bold text-slate-700 text-xl">{selectedWord.wordType}</p>
+        <p class="italic font-bold text-slate-700 text-xl">
+          {selectedWord.wordType}
+        </p>
         <p>{selectedWord.definition}</p>
       </div>
       <TextInput bind:text={guess} incorrect={incorrectGuess} {submitGuess} />
-      {#each attempts as {guess, correct}}
-        <p class="text-sm text-center text-zinc-200 font-bold pt-2">
-          {guess}
-          {#if correct}
-            <span class="text-green-400">✓</span>
-          {:else}
-            <span class="text-red-400">✗</span>
-          {/if}
-        </p>
-      {/each}
+      <div class="m-20">
+        {#each attempts.filter((a) => a.answer) as {guess, answer}}
+          <p class="text-sm text-center text-zinc-200 font-bold pt-2">
+            {guess}
+            {#if answer === 'correct'}
+              <span class="text-green-400">✓</span>
+            {:else}
+              <span class="text-red-400">✗</span>
+            {/if}
+          </p>
+        {/each}
+      </div>
     {/if}
   {:else if result === resultEnum.FAILED}
     <p>Great attempt, but the word was {selectedWord.word}</p>
