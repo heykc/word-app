@@ -10,7 +10,7 @@ import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ fetch }) {
- //const randWord = await getRandomWord(fetch);
+//  const randWord = await getRandomWord(fetch);
 
   // sometimes thesaurus api doesn't have an entry for the word
   // so getSynonyms will recursively call itself until it finds a word
