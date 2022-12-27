@@ -1,4 +1,5 @@
 <script>
+  import TextInput from '$lib/TextInput.svelte';
   export let data;
 
   const resultEnum = {
@@ -30,16 +31,15 @@
   }
 </script>
 
-<h1>Guess the word:</h1>
+<h1 class="text-3xl font-bold underline">
+  Guess the word:
+</h1>
 {#if result === resultEnum.GUESSING}
   <p>Attempts: {attempts}</p>
   {#if selectedWord}
     <p>{selectedWord.wordType}, {selectedWord.definition}</p>
-    <input type="text" bind:value={guess} />
-    {#if incorrectGuess && !guess}
-      <p>Sorry, try again!</p>
-    {/if}
-    <button on:click={submitGuess}>Submit</button>
+    <TextInput bind:text={guess} incorrect={incorrectGuess} {submitGuess} />
+    <!-- <button on:click={submitGuess}>Submit</button> -->
   {/if}
 {:else if result === resultEnum.FAILED}
   <p>Great attempt, but the word was {selectedWord.word}</p>
