@@ -54,20 +54,20 @@
 <main class="p-10">
   {#if result === resultEnum.GUESSING}
     {#if selectedWord}
-      <div class="flex flex-row-reverse justify-center gap-2">
+      <div class="flex flex-row-reverse justify-center gap-2 text-2xl mt-14 mb-14">
         {#each attempts as {id, answer} (id)}
           {@const name = answer === 'incorrect' ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
           {@const classNames = answer === 'incorrect' ? 'text-zinc-400' : 'text-red-400'}
           <Icon {name} {classNames} />
         {/each}
       </div>
-      <div class="bg-slate-100/90 rounded-sm text-zinc-900 p-2 mt-5 mb-5">
-        <p class="italic font-bold text-slate-700 text-xl">
-          {selectedWord.wordType}
-        </p>
-        <p>{selectedWord.definition}</p>
-      </div>
-      <TextInput bind:text={guess} incorrect={incorrectGuess} {submitGuess} />
+
+      <TextInput bind:text={guess} {submitGuess} />
+
+      <p class="p-2 mt-5 mb-5">
+        <em>{selectedWord.wordType}</em>. {selectedWord.definition}
+      </p>
+
       <div class="m-20">
         {#each attempts.filter((a) => a.answer) as {guess, answer}}
           <p class="text-sm text-center text-zinc-200 font-bold pt-2">

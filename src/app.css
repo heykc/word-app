@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 @layer base {
-  html, body {
+  html {
+    @apply bg-slate-800;
+  }
+  body {
     @apply bg-gradient-to-b;
-    @apply from-slate-700;
-    @apply via-slate-800;
-    @apply to-slate-900;
+    @apply from-zinc-900;
     @apply text-white;
     @apply h-screen;
   }

@@ -1,6 +1,5 @@
 <script>
   export let text = '';
-  export let incorrect = false;
   export let submitGuess = () => {};
 </script>
 
@@ -8,27 +7,50 @@
   class="w-100 grid place-items-center relative"
   on:submit|preventDefault={submitGuess}
 >
-  <label for="guess" class="hidden">
+  <label for="guess-input" class="hidden">
     Guess the word:
   </label>
-  <input
-    type="text"
-    id="guess"
-    placeholder="Guess the word"
-    class="
-      w-full bg-transparent border-0 border-b-2 focus:border-b-4
-      outline-none text-center p-2 text-2xl focus:placeholder:opacity-0
-      transition-all duration-300
-    "
-    bind:value={text}
-  />
-  <div
-    class="
-      transform-all duration-200 absolute 
-      {(incorrect && !text) ? 'opacity-100 top-14' : 'opacity-0 top-10'}
-  ">
-    <p class="text-sm text-center text-red-400 font-bold pt-2">
-      Sorry, try again!
-    </p>
+  <div id="guess" class="w-full">
+    <input
+      type="text"
+      id="guess-input"
+      placeholder="Guess the word"
+      class="
+        w-full bg-transparent border-0
+        outline-none text-center p-2 text-2xl focus:placeholder:opacity-0
+        transition-all duration-300
+      "
+      bind:value={text}
+    />
   </div>
 </form>
+
+<style>
+  #guess::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: calc(50%);
+    transform: translateX(-50%);
+    width: 100%;
+    height: 2px;
+    @apply bg-slate-400;
+  }
+
+  #guess::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: calc(50%);
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    @apply bg-white;
+    transition: width 0.3s ease;
+  }
+
+  #guess:focus-within::after {
+    width: 100%;
+    height: 3px;
+  }
+</style>
