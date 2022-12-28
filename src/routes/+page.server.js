@@ -4,22 +4,43 @@ import {
   RANDOM_WORD_KEY,
   THESAURUS_KEY,
   THESAURUS_URL,
+  UPSTASH_URL,
+  UPSTASH_TOKEN,
 } from '$env/static/private';
 import { error } from '@sveltejs/kit';
+import utc from 'dayjs/plugin/utc';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const tz = 'America/New_York';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ fetch }) {
-//  const randWord = await getRandomWord(fetch);
+  const { result } = await getCache(fetch);
+  const cache = result && JSON.parse(result);
+  const dayjsLocal = dayjs();
+  const dayjsNY = dayjsLocal.tz(tz);
+
+  if (cache && !dayjsNY.isAfter(dayjs(cache.createdAt), 'day')) {
+    return {
+      status: 200,
+      body: { selectedWord: cache.selectedWord }
+    };
+  }
+
+  const randWord = await getRandomWord(fetch);
 
   // sometimes thesaurus api doesn't have an entry for the word
   // so getSynonyms will recursively call itself until it finds a word
-  const selectedWord = {
-    word: 'malleable',
-    definition: 'capable of being shaped or bent or drawn out',
-    synonyms: ['plastic', 'flexible'],
-    wordType: 'adjective',
-  }; //await getSynonyms(fetch, randWord);
+  const selectedWord = await getSynonyms(fetch, randWord);
+
+  await setCache(fetch, {
+    selectedWord,
+    createdAt: dayjsNY.toISOString(),
+  });
 
   return {
     status: 200,
@@ -37,7 +58,6 @@ const getRandomWord = async (fetch) => {
 
   if (res.ok) {
     const word = await res.text();
-    console.log(word)
     return word;
   }
 
@@ -69,3 +89,36 @@ const getSynonyms = async (fetch, word) => {
     return parseSynonyms(data[0]);
   }
 };
+
+const getCache = async (fetch) => {
+  const res = await fetch(`${UPSTASH_URL}/get/cache`, {
+    headers: {
+      Authorization: `Bearer ${UPSTASH_TOKEN}`,
+    },
+  });
+
+  if (res.ok) {
+    return res.json();
+  }
+
+  if (res.status === 404) {
+    return null;
+  }
+
+  throw error(500, 'Failed to get cache');
+};
+
+const setCache = async (fetch, cache) => {
+  const res = await fetch(`${UPSTASH_URL}/set/cache`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${UPSTASH_TOKEN}`,
+    },
+    body: JSON.stringify(cache),
+  });
+
+  if (res.ok) {
+    return res.json();
+  }
+  throw error(500, 'Failed to set cache');
+}
