@@ -47,7 +47,11 @@
   }
 </script>
 
-<main class="p-3">
+<svelte:head>
+  <title>What's the word?</title>
+</svelte:head>
+
+<main class="p-10">
   {#if result === resultEnum.GUESSING}
     {#if selectedWord}
       <div class="flex flex-row-reverse justify-center gap-2">
