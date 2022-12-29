@@ -82,16 +82,16 @@
 </svelte:head>
 
 <main class="p-10">
+  <div class="flex flex-row-reverse justify-center gap-2 text-2xl mt-14 mb-14">
+    {#each attempts as {id, answer} (id)}
+      {@const name = answer === 'incorrect' ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
+      {@const classNames = answer === 'incorrect' ? 'text-zinc-400' : 'text-red-400'}
+      <Icon {name} {classNames} />
+    {/each}
+  </div>
+
   {#if gameState === stateEnum.GUESSING}
     {#if selectedWord}
-      <div class="flex flex-row-reverse justify-center gap-2 text-2xl mt-14 mb-14">
-        {#each attempts as {id, answer} (id)}
-          {@const name = answer === 'incorrect' ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
-          {@const classNames = answer === 'incorrect' ? 'text-zinc-400' : 'text-red-400'}
-          <Icon {name} {classNames} />
-        {/each}
-      </div>
-
       <TextInput bind:text={guess} {submitGuess} />
 
       <p class="p-2 mt-5">
@@ -117,8 +117,6 @@
           <span class="text-red-400">✗</span>
         {:else}
           <span class="text-green-400">✓</span>
-        {:else}
-          <span class="text-red-400">✗</span>
         {/if}
       </p>
     {/each}
