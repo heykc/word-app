@@ -18,6 +18,7 @@
   let shareSuccess = false;
 
   $: selectedWord = data?.body?.selectedWord;
+  $: formattedSynonyms = selectedWord?.synonyms.map((s) => formatString(s));
   $: currentAttempt = attempts.filter(({answer}) => !!answer).length;
   $: {
     if (attempts[attempts.length - 1].answer === 'incorrect') {
@@ -55,6 +56,8 @@
     }
   }
 
+  const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
+
   const submitGuess = () => {
     const newGuess = attempts.find(({id}) => id === currentAttempt);
     const setAttempt = (state) => {
@@ -63,9 +66,9 @@
       attempts[currentAttempt] = newGuess;
     };
 
-    if (guess.toLowerCase() === selectedWord.word.toLowerCase()) {
+    if (formatString(guess) === formatString(selectedWord.word)) {
       setAttempt('correct', stateEnum.SUCCESS);
-    } else if (selectedWord.synonyms.includes(guess)) {
+    } else if (formattedSynonyms.includes(formatString(guess))) {
       setAttempt('similar', stateEnum.SIMILAR);
     } else {
       setAttempt('incorrect');
@@ -113,7 +116,7 @@
     <p>You could also have used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
   {:else if gameState === stateEnum.SIMILAR}
     <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is a synonym for today's secret word <strong>{selectedWord.word}</strong>!</p>
-    <p>You could have also used any of these synonyms: {selectedWord.synonyms.filter((w) => w !== guess).join(', ')}</p>
+    <p>You could have also used any of these synonyms: {formattedSynonyms.filter((w) => w !== formatString(attempts[currentAttempt - 1].guess)).join(', ')}</p>
   {:else if gameState === stateEnum.SUCCESS}
     <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is today's secret word!</p>
     <p>You could have also used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
