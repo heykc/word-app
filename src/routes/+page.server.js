@@ -64,8 +64,13 @@ const getRandomWord = async (fetch) => {
   throw error(500, 'Failed to fetch random word');
 }
 
-const parseSynonyms = ({ meta: { id: word, syns }, fl: wordType, shortdef: definitions }) => {
+const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definitions }) => {
   const index = Math.floor(Math.random() * syns.length);
+  let wordType = fl;
+
+  if (!wordType.includes('plural') && sls.some((s) => s.includes('plural'))) {
+    wordType = `plural ${wordType}`;
+  }
 
   return {
     word,
