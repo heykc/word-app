@@ -113,7 +113,9 @@
     {#each attempts.filter((a) => a.answer) as {guess, answer}}
       <p class="text-sm text-center text-zinc-200 font-bold pt-2">
         {guess}
-        {#if answer === 'correct'}
+        {#if answer === 'incorrect'}
+          <span class="text-red-400">✗</span>
+        {:else}
           <span class="text-green-400">✓</span>
         {:else}
           <span class="text-red-400">✗</span>
