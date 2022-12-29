@@ -66,6 +66,8 @@ const getRandomWord = async (fetch) => {
 
 const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definitions }) => {
   const index = Math.floor(Math.random() * syns.length);
+  const definition = definitions[index];
+  const synonyms = syns[index].filter((s) => !definition.includes(s));
   let wordType = fl;
 
   if (wordType === 'noun' && sls?.some((s) => s.includes('plural'))) {
@@ -74,8 +76,8 @@ const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definition
 
   return {
     word,
-    definition: definitions[index],
-    synonyms: syns[index],
+    definition,
+    synonyms,
     wordType,
   }
 };
