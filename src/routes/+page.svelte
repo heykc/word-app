@@ -119,7 +119,7 @@
     <p>You could have also used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
   {/if}
 
-  <!-- button to share using Web share api -->
+  {#if gameState !== stateEnum.GUESSING}
   <button
     id="share"
     class="
@@ -140,6 +140,8 @@
   >
     <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
   </button>
+  {/if}
+  
 </main>
 
 <style>
