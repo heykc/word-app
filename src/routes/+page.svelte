@@ -94,22 +94,9 @@
 
       <TextInput bind:text={guess} {submitGuess} />
 
-      <p class="p-2 mt-5 mb-5">
+      <p class="p-2 mt-5">
         <em>{selectedWord.wordType}</em>. {selectedWord.definition}
       </p>
-
-      <div class="m-20">
-        {#each attempts.filter((a) => a.answer) as {guess, answer}}
-          <p class="text-sm text-center text-zinc-200 font-bold pt-2">
-            {guess}
-            {#if answer === 'correct'}
-              <span class="text-green-400">✓</span>
-            {:else}
-              <span class="text-red-400">✗</span>
-            {/if}
-          </p>
-        {/each}
-      </div>
     {/if}
   {:else if gameState === stateEnum.FAIL}
     <p>Great attempt, but the word was <strong>{selectedWord.word}</strong>.</p>
@@ -121,6 +108,19 @@
     <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is today's secret word!</p>
     <p>You could have also used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
   {/if}
+
+  <div class="m-10">
+    {#each attempts.filter((a) => a.answer) as {guess, answer}}
+      <p class="text-sm text-center text-zinc-200 font-bold pt-2">
+        {guess}
+        {#if answer === 'correct'}
+          <span class="text-green-400">✓</span>
+        {:else}
+          <span class="text-red-400">✗</span>
+        {/if}
+      </p>
+    {/each}
+  </div>
 
   {#if gameState !== stateEnum.GUESSING}
   <button
