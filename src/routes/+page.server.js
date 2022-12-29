@@ -68,8 +68,8 @@ const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definition
   const index = Math.floor(Math.random() * syns.length);
   let wordType = fl;
 
-  if (!wordType.includes('plural') && sls.some((s) => s.includes('plural'))) {
-    wordType = `plural ${wordType}`;
+  if (wordType === 'noun' && sls?.some((s) => s.includes('plural'))) {
+    wordType = 'plural noun';
   }
 
   return {
