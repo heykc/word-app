@@ -1,47 +1,74 @@
 <script>
+  import { browser } from '$app/environment';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
-  export let data;
 
-  const resultEnum = {
+  const stateEnum = {
     GUESSING: 'guessing',
-    FAILED: 'failed',
+    FAIL: 'fail',
     SIMILAR: 'similar',
-    CORRECT: 'correct',
+    SUCCESS: 'success',
   };
 
+  export let data;
+
   let attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', answer: '' }));
-  let attempt = 0;
-  let result = resultEnum.GUESSING;
+  let gameState = stateEnum.GUESSING;
   let guess = '';
-  let incorrectGuess = false;
+  let shareSuccess = false;
 
   $: selectedWord = data?.body?.selectedWord;
+  $: currentAttempt = attempts.filter(({answer}) => !!answer).length;
+  $: {
+    if (attempts[attempts.length - 1].answer === 'incorrect') {
+      gameState = stateEnum.FAIL;
+    }
+
+    const previousAttempt = attempts[currentAttempt - 1] ?? null;
+
+    if (previousAttempt?.answer === 'correct') {
+      gameState = stateEnum.SUCCESS;
+    }
+
+    if (previousAttempt?.answer === 'similar') {
+      gameState = stateEnum.SIMILAR;
+    }
+  }
+  $: if (browser) {
+    const localLastWord = window.localStorage.getItem('lastWord') || '';
+    const localAttempts = window.localStorage.getItem('attempts') || '';
+
+    if (localLastWord && selectedWord.word !== localLastWord) {
+      window.localStorage.removeItem('attempts');
+      window.localStorage.removeItem('lastWord');
+    }
+
+    if (localAttempts) {
+      attempts = JSON.parse(window.localStorage.getItem('attempts'));
+    }
+  }
+  $: if (browser) {
+    window.localStorage.setItem('attempts', JSON.stringify(attempts));
+
+    if (gameState !== stateEnum.GUESSING) {
+      window.localStorage.setItem('lastWord', selectedWord.word);
+    }
+  }
 
   const submitGuess = () => {
-    const newGuess = attempts.find(({id}) => id === attempt);
-    newGuess.guess = guess;
+    const newGuess = attempts.find(({id}) => id === currentAttempt);
+    const setAttempt = (state) => {
+      newGuess.answer = state;
+      newGuess.guess = guess;
+      attempts[currentAttempt] = newGuess;
+    };
 
-    if (guess === selectedWord.word) {
-      result = resultEnum.CORRECT
-      newGuess.answer = 'correct';
-      attempts[attempt] = newGuess;
-      attempt++;
+    if (guess.toLowerCase() === selectedWord.word.toLowerCase()) {
+      setAttempt('correct', stateEnum.SUCCESS);
     } else if (selectedWord.synonyms.includes(guess)) {
-      result = resultEnum.SIMILAR;
-      newGuess.answer = 'similar';
-      attempts[attempt] = newGuess;
-      attempt++;
-    } else if (attempt === 2) {
-      result = resultEnum.FAILED;
-      newGuess.answer = 'incorrect';
-      attempts[attempt] = newGuess;
-      attempt++;
+      setAttempt('similar', stateEnum.SIMILAR);
     } else {
-      incorrectGuess = true;
-      newGuess.answer = 'incorrect';
-      attempts[attempt] = newGuess;
-      attempt++;
+      setAttempt('incorrect');
       guess = '';
     }
   }
@@ -52,7 +79,7 @@
 </svelte:head>
 
 <main class="p-10">
-  {#if result === resultEnum.GUESSING}
+  {#if gameState === stateEnum.GUESSING}
     {#if selectedWord}
       <div class="flex flex-row-reverse justify-center gap-2 text-2xl mt-14 mb-14">
         {#each attempts as {id, answer} (id)}
@@ -81,14 +108,62 @@
         {/each}
       </div>
     {/if}
-  {:else if result === resultEnum.FAILED}
-    <p>Great attempt, but the word was {selectedWord.word}</p>
+  {:else if gameState === stateEnum.FAIL}
+    <p>Great attempt, but the word was <strong>{selectedWord.word}</strong>.</p>
     <p>You could also have used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
-  {:else if result === resultEnum.SIMILAR}
-    <p>Congratulations! You took <em>{attempts.length}</em> attempts to guess <strong>{guess}</strong>, which is a synonym for today's secret word <strong>{selectedWord.word}</strong>!</p>
+  {:else if gameState === stateEnum.SIMILAR}
+    <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is a synonym for today's secret word <strong>{selectedWord.word}</strong>!</p>
     <p>You could have also used any of these synonyms: {selectedWord.synonyms.filter((w) => w !== guess).join(', ')}</p>
-  {:else if result === resultEnum.CORRECT}
-    <p>Congratulations! You took <em>{attempts.length}</em> attempts to guess <strong>{guess}</strong>, which is today's secret word!</p>
+  {:else if gameState === stateEnum.SUCCESS}
+    <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is today's secret word!</p>
     <p>You could have also used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
   {/if}
+
+  <!-- button to share using Web share api -->
+  <button
+    id="share"
+    class="
+      fixed bottom-0 right-0 w-14 h-14 text-lg m-5 p-2
+      rounded-full text-slate-900
+      {shareSuccess ? 'bg-green-400' : 'bg-zinc-200'}
+    "
+    class:success={shareSuccess}
+    on:click={async () => {
+      if (navigator.clipboard) {
+        const red = `❤️`;
+        const black = `🖤`;
+        let text = `${Array.from(attempts, ({answer}) => answer === 'incorrect' ? black : red ).join('')} "What's the word?"`
+        await navigator.clipboard.writeText(text);
+        shareSuccess = true;
+      }
+    }}
+  >
+    <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
+  </button>
 </main>
+
+<style>
+  #share {
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  #share.success::before {
+    opacity: 1;
+    transform: translateY(50%) translateX(-130%);
+    @apply text-green-400;
+  }
+
+  #share::before {
+    content: 'copied!';
+    position: absolute;
+    bottom: 50%;
+    left: 0px;
+    transform: translateY(50%) translateX(-20%);
+    @apply text-gray-50;
+    @apply text-lg;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+</style>
