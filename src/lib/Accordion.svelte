@@ -24,7 +24,7 @@
 
 <details
   bind:this={details}
-  class="ring-1 ring-zinc-300 p-3 accordion-details {disabled ? 'text-zinc-500' : ''}"
+  class="border-t-2 border-zinc-300 p-3 accordion-details {disabled ? 'text-zinc-500' : ''}"
   on:click={closeOthers}
 >
   <summary class="flex items-center justify-between">
