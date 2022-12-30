@@ -1,9 +1,11 @@
 <script>
+  import { inject } from '@vercel/analytics';
   import '../app.css';
   import Icon from '$lib/Icon.svelte';
-  import { inject } from '@vercel/analytics';
 
-  inject();
+  if (!import.meta.env.DEV) {
+    inject();
+  }
 </script>
 
 <header class="w-100 p-5">
