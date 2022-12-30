@@ -126,7 +126,7 @@
         </span>
       </div>
       {#each attempts.filter(({ guess }) => guess) as {guess, matchId}}
-        <p class="text-sm text-zinc-200 font-bold pt-2">
+        <p class="text-sm text-zinc-200 pt-2">
           {guess}
           {#if matchId}
             <span class="text-green-400">✓</span>
@@ -144,7 +144,7 @@
         {/if}
       </div>
       {#if gameState !== stateEnum.GUESSING}
-        <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start">
+        <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
           {#each Object.values(selectedWord.words) as { word, score }}
             <li class="flex justify-between">
               {word} <span class="font-semibold">{score}</span>
