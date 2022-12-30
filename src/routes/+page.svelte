@@ -18,7 +18,7 @@
   let shareSuccess = false;
 
   $: selectedWord = data?.body?.selectedWord;
-  $: formattedSynonyms = selectedWord?.synonyms.map((s) => formatString(s));
+  $: formattedSynonyms = selectedWord?.synonyms.map(({word}) => formatString(word));
   $: currentAttempt = attempts.filter(({answer}) => !!answer).length;
   $: {
     if (attempts[attempts.length - 1].answer === 'incorrect') {
@@ -100,13 +100,25 @@
     {/if}
   {:else if gameState === stateEnum.FAIL}
     <p>Great attempt, but the word was <strong>{selectedWord.word}</strong>.</p>
-    <p>You could also have used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
+    <p>You could also have used any of these synonyms: {selectedWord.synonyms.map(({ word }) => word).join(', ')}</p>
   {:else if gameState === stateEnum.SIMILAR}
     <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is a synonym for today's secret word <strong>{selectedWord.word}</strong>!</p>
-    <p>You could have also used any of these synonyms: {formattedSynonyms.filter((w) => w !== formatString(attempts[currentAttempt - 1].guess)).join(', ')}</p>
+    <p>
+      You could have also used any of these synonyms: {
+        selectedWord.synonyms
+          .filter(({ word }) => formatString(word) !== formatString(attempts[currentAttempt - 1].guess))
+          .map(({ word }) => word).join(', ')
+      }
+    </p>
   {:else if gameState === stateEnum.SUCCESS}
     <p>Congratulations! You took <em>{currentAttempt}</em> attempt{currentAttempt === 1 ? '' : 's'} to guess <strong>{attempts[currentAttempt - 1].guess}</strong>, which is today's secret word!</p>
-    <p>You could have also used any of these synonyms: {selectedWord.synonyms.join(', ')}</p>
+    <p>
+      You could have also used any of these synonyms: {
+        selectedWord.synonyms
+          .filter(({ word }) => formatString(word) !== formatString(attempts[currentAttempt - 1].guess))
+          .map(({ word }) => word).join(', ')
+      }
+    </p>
   {/if}
 
   <div class="m-10">
