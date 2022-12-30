@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
+  import Accordion from '$lib/Accordion.svelte';
 
   const stateEnum = {
     GUESSING: 'guessing',
@@ -63,8 +64,18 @@
   <title>What's the word?</title>
 </svelte:head>
 
-<main class="p-10">
-  <div class="flex flex-col content-center flex-wrap mt-14 mb-14">
+<main class="grid grid-cols-3 mt-10">
+  {#if gameState === stateEnum.FAIL}
+    <p class="col-start-2 columns-1 text-center text-3xl">
+      Better luck next time.
+    </p>
+  {/if}
+  {#if gameState === stateEnum.SUCCESS}
+    <p class="col-start-2 columns-1 text-center text-3xl">
+      Congratulations!
+    </p>
+  {/if}
+  <div class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10">
     <div class="flex flex-row-reverse justify-center gap-2 text-2xl">
       {#each attempts as {guess, matchId}}
         {@const incorrect = guess && !matchId}
@@ -84,43 +95,67 @@
 
   {#if gameState === stateEnum.GUESSING}
     <TextInput bind:text={guess} {submitGuess} />
-
-    <p class="p-2 mt-5">
-      <em>{selectedWord.wordType}</em>. {selectedWord.definition}
-    </p>
-  {:else if gameState === stateEnum.FAIL}
-    <p>Nice try, but you're all out of hearts.</p>
-    <p>These are the words, and their associated scores, we would have accepted for today's definition:</p>
-    <ul class="list-disc list-inside">
-      {#each Object.values(selectedWord.words) as { word, score }}
-        <li>{word} <span>{score}</span></li>
-      {/each}
-    </ul>
-  {:else if gameState === stateEnum.SUCCESS}
-    {@const match = selectedWord.words[attempts[currentAttempt - 1].matchId]}
-    <p>Nice one! You earned {match.score} points for your word!</p>
-    <p>These were all the accepted words, along with their associated scores:</p>
-    <ul class="grid grid-flow-row grid-cols-2 gap-2 mt-4 content-start justify-items-end">
-      {#each Object.values(selectedWord.words) as { word, score }}
-        <li>{word} <span class="font-semibold">{score}</span></li>
-      {/each}
-    </ul>
   {/if}
 
-  <div class="m-10">
-    {#each attempts.filter(({ guess }) => guess) as {guess, matchId}}
-      <p class="text-sm text-center text-zinc-200 font-bold pt-2">
-        {guess}
-        {#if matchId}
-          <span class="text-green-400">✓</span>
-        {:else}
-          <span class="text-red-400">✗</span>
+  <p class="col-start-2 columns-1 p-2 mt-5">
+    <em>{selectedWord.wordType}</em>. {selectedWord.definition}
+  </p>
+
+  <div class="mt-10 col-span-full">
+    <Accordion summary="Rules">
+      <div>
+        <p class="text-sm text-zinc-300 mt-2">
+          Every day, a new definition is posted. You have three attempts to guess a word that matches the definition.
+          You are awarded points based on the frequency of the word in the English language. The less common the word,
+          the more points you earn.
+        </p>
+        <p class="text-sm text-zinc-300 mt-3 mb-2">
+          Disclaimer: I did not create the data set that this app uses, so I cannot guarantee the accuracy of the data.
+        </p>
+      </div>
+    </Accordion>
+    <Accordion disabled={attempts.every(({guess}) => !guess)}>
+      <div slot="summary" class="flex items-center">
+        <span>Attempts</span>
+        <span class="
+          w-4 h-4 rounded-full flex items-center justify-center
+          {attempts.every(({guess}) => !guess) ? 'bg-zinc-400' : 'bg-zinc-100'}
+          text-slate-900 text-sm font-semibold ml-3
+        ">
+          {currentAttempt}
+        </span>
+      </div>
+      {#each attempts.filter(({ guess }) => guess) as {guess, matchId}}
+        <p class="text-sm text-zinc-200 font-bold pt-2">
+          {guess}
+          {#if matchId}
+            <span class="text-green-400">✓</span>
+          {:else}
+            <span class="text-red-400">✗</span>
+          {/if}
+        </p>
+      {/each}
+    </Accordion>
+    <Accordion disabled={gameState === stateEnum.GUESSING}>
+      <div slot="summary">
+        Possible Answers
+        {#if gameState === stateEnum.GUESSING}
+          <Icon name="fa-solid fa-lock" classNames="text-sm" />
         {/if}
-      </p>
-    {/each}
+      </div>
+      {#if gameState !== stateEnum.GUESSING}
+        <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start">
+          {#each Object.values(selectedWord.words) as { word, score }}
+            <li class="flex justify-between">
+              {word} <span class="font-semibold">{score}</span>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </Accordion>
   </div>
 
-  {#if gameState !== stateEnum.GUESSING}
+  <!-- {#if gameState !== stateEnum.GUESSING}
   <button
     id="share"
     class="
@@ -141,10 +176,25 @@
   >
     <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
   </button>
-  {/if}
+  {/if} -->
 </main>
 
 <style>
+  main {
+    display: grid;
+    grid-template-columns: 20px auto 20px;
+    grid-flow-row: row;
+  }
+
+  :global(.accordion-details) {
+    @apply col-span-full;
+  }
+
+  :global(.text-input) {
+    @apply col-start-2;
+    @apply columns-1;
+  }
+
   #share {
     transition: background-color 0.2s ease-in-out;
   }
@@ -167,5 +217,9 @@
     color: #fff;
     opacity: 0;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  summary::marker {
+    font-size: 0;
   }
 </style>
