@@ -65,51 +65,58 @@
 </svelte:head>
 
 <main class="grid grid-cols-3 mt-10">
-  {#if gameState === stateEnum.FAIL}
-    <p class="col-start-2 columns-1 text-center text-3xl">
+  <!-- Result Message -->
+  <p class="col-start-2 columns-1 text-center text-3xl">
+    {#if gameState === stateEnum.FAIL}
       Better luck next time.
-    </p>
-  {/if}
-  {#if gameState === stateEnum.SUCCESS}
-    <p class="col-start-2 columns-1 text-center text-3xl">
+    {:else if gameState === stateEnum.SUCCESS}
       Congratulations!
-    </p>
-  {/if}
-  <div class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10">
+    {/if}
+  </p>
+
+  <!-- Health/Score -->
+  <div bind:this={shareImage} class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10">
     <div class="flex flex-row-reverse justify-center gap-2 text-2xl">
-      {#each attempts as {guess, matchId}}
+      {#each attempts as { guess, matchId }}
         {@const incorrect = guess && !matchId}
         {@const name = incorrect ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
         {@const classNames = incorrect ? 'text-zinc-400' : 'text-red-400'}
+
         <Icon {name} {classNames} />
       {/each}
     </div>
+
     {#if gameState !== stateEnum.GUESSING}
       {@const match = selectedWord.words[attempts.find(({matchId}) => matchId)?.matchId]}
       {@const score = match?.score ?? 0}
+
       <div class="self-center text-8xl text-zinc-200 font-bold text-center relative mt-6 w-fit">
         {score} <span class="text-sm text-bold absolute bottom-2 -right-8">PTS</span>
       </div>
     {/if}
   </div>
 
+  <!-- Guess Input -->
   {#if gameState === stateEnum.GUESSING}
     <TextInput bind:text={guess} {submitGuess} />
   {/if}
 
+  <!-- Definition -->
   <p class="col-start-2 columns-1 p-2 mt-5">
     <em>{selectedWord.wordType}</em>. {selectedWord.definition}
   </p>
 
+  <!-- Info Accordion -->
   <div class="mt-10 col-span-full">
     <Accordion summary="Rules">
       <div>
-        <p class="text-sm text-zinc-300 mt-2">
+        <p class="text-sm text-zinc-300">
           Every day, a new definition is posted. You have three attempts to guess a word that matches the definition.
           You are awarded points based on the frequency of the word in the English language. The less common the word,
           the more points you earn.
         </p>
-        <p class="text-sm text-zinc-300 mt-3 mb-2">
+
+        <p class="text-sm text-zinc-300 mt-3">
           Disclaimer: I did not create the data set that this app uses, so I cannot guarantee the accuracy of the data.
         </p>
       </div>
