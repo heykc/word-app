@@ -1,5 +1,6 @@
 <script>
   import { browser } from '$app/environment';
+  import html2canvas from 'html2canvas';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
@@ -15,6 +16,7 @@
   let attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', matchId: '' }));
   let guess = '';
   let shareSuccess = false;
+  let shareImage;
 
   $: selectedWord = data?.body?.selectedWord;
   $: currentAttempt = attempts.filter(({guess}) => !!guess).length;
@@ -58,6 +60,23 @@
     attempts[currentAttempt] = newGuess;
     guess = '';
   }
+
+  const srcToBlob = async (src) => fetch(src).then((res) => res.blob())
+
+  const share = async () => {
+    shareImage.height = '400px';
+    const res = await html2canvas(document.body);
+    const blob = await srcToBlob(res.toDataURL());
+
+    if (navigator.clipboard) {
+      navigator.clipboard.write([
+        new ClipboardItem({
+          'image/png': blob
+        })
+      ])
+        .then(() => shareSuccess = true)
+    }
+  };
 </script>
 
 <svelte:head>
@@ -163,7 +182,7 @@
     </Accordion>
   </div>
 
-  <!-- {#if gameState !== stateEnum.GUESSING}
+  {#if gameState !== stateEnum.GUESSING}
   <button
     id="share"
     class="
@@ -172,19 +191,11 @@
       {shareSuccess ? 'bg-green-400' : 'bg-zinc-200'}
     "
     class:success={shareSuccess}
-    on:click={async () => {
-      if (navigator.clipboard) {
-        const red = `❤️`;
-        const black = `🖤`;
-        let text = `${Array.from(attempts, ({matchId}) => !matchId ? black : red ).join('')} "What's the word?"`
-        await navigator.clipboard.writeText(text);
-        shareSuccess = true;
-      }
-    }}
+    on:click={share}
   >
     <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
   </button>
-  {/if} -->
+  {/if}
 </main>
 
 <style>
