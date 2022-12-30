@@ -144,9 +144,10 @@
         {/if}
       </div>
       {#if gameState !== stateEnum.GUESSING}
+        {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
         <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
-          {#each Object.values(selectedWord.words) as { word, score }}
-            <li class="flex justify-between">
+          {#each Object.entries(selectedWord.words) as [id, { word, score }]}
+            <li class="flex justify-between { matchId === id ? 'font-bold text-green-300' : '' }">
               {word} <span class="font-semibold">{score}</span>
             </li>
           {/each}
