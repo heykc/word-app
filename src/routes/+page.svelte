@@ -31,6 +31,9 @@
       window.localStorage.removeItem('lastWord');
     }
 
+    if (localAttempts) {
+      attempts = JSON.parse(window.localStorage.getItem('attempts'));
+    }
   }
   $: if (browser) {
     window.localStorage.setItem('attempts', JSON.stringify(attempts));
@@ -73,8 +76,8 @@
     {#if gameState !== stateEnum.GUESSING}
       {@const match = selectedWord.words[attempts.find(({matchId}) => matchId)?.matchId]}
       {@const score = match?.score ?? 0}
-      <div class="text-5xl text-zinc-200 font-extrabold">
-        {score}
+      <div class="self-center text-8xl text-zinc-200 font-bold text-center relative mt-6 w-fit">
+        {score} <span class="text-sm text-bold absolute bottom-2 -right-8">PTS</span>
       </div>
     {/if}
   </div>
@@ -95,12 +98,11 @@
     </ul>
   {:else if gameState === stateEnum.SUCCESS}
     {@const match = selectedWord.words[attempts[currentAttempt - 1].matchId]}
-    <p>Nice one!</p>
-    <p>You earned {match.score} points for your word!</p>
-    <p>These are the words, and their associated scores, we would have accepted for today's definition:</p>
-    <ul class="list-disc list-inside">
+    <p>Nice one! You earned {match.score} points for your word!</p>
+    <p>These were all the accepted words, along with their associated scores:</p>
+    <ul class="grid grid-flow-row grid-cols-2 gap-2 mt-4 content-start justify-items-end">
       {#each Object.values(selectedWord.words) as { word, score }}
-        <li>{word} <span>{score}</span></li>
+        <li>{word} <span class="font-semibold">{score}</span></li>
       {/each}
     </ul>
   {/if}
