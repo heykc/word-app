@@ -4,7 +4,7 @@
 </script>
 
 <form
-  class="w-100 grid place-items-center relative"
+  class="w-100 grid place-items-center relative text-input"
   on:submit|preventDefault={submitGuess}
 >
   <label for="guess-input" class="hidden">
