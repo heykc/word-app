@@ -3,6 +3,7 @@
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
+  import Health from '$lib/Health.svelte';
 
   const stateEnum = {
     GUESSING: 'guessing',
@@ -76,35 +77,27 @@
 
   <!-- Health/Score -->
   <div class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10">
-    <div class="flex flex-row-reverse justify-center gap-2 text-2xl">
-      {#each attempts as { guess, matchId }}
-        {@const incorrect = guess && !matchId}
-        {@const name = incorrect ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
-        {@const classNames = incorrect ? 'text-zinc-400' : 'text-red-400'}
-
-        <Icon {name} {classNames} />
-      {/each}
-    </div>
+    <Health {attempts} />
 
     {#if gameState !== stateEnum.GUESSING}
       {@const match = selectedWord.words[attempts.find(({matchId}) => matchId)?.matchId]}
       {@const score = match?.score ?? 0}
 
-      <div class="self-center text-8xl text-zinc-200 font-bold text-center relative mt-6 w-fit">
+      <div class="self-center text-8xl text-zinc-200 font-bold text-center relative w-fit">
         {score} <span class="text-sm text-bold absolute bottom-2 -right-8">PTS</span>
       </div>
     {/if}
+
+    <!-- Guess Input -->
+    {#if gameState === stateEnum.GUESSING}
+      <TextInput bind:text={guess} {submitGuess} />
+    {/if}
+
+    <!-- Definition -->
+    <p class="col-start-2 columns-1 p-2 mt-5">
+      <em>{selectedWord.wordType}</em>. {selectedWord.definition}
+    </p>
   </div>
-
-  <!-- Guess Input -->
-  {#if gameState === stateEnum.GUESSING}
-    <TextInput bind:text={guess} {submitGuess} />
-  {/if}
-
-  <!-- Definition -->
-  <p class="col-start-2 columns-1 p-2 mt-5">
-    <em>{selectedWord.wordType}</em>. {selectedWord.definition}
-  </p>
 
   <!-- Info Accordion -->
   <div class="mt-10 col-span-full">
