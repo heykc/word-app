@@ -5,6 +5,7 @@
 
 <form
   class="w-100 grid place-items-center relative text-input"
+  autocomplete="off"
   on:submit|preventDefault={submitGuess}
 >
   <label for="guess-input" class="hidden">
