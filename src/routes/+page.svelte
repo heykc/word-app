@@ -1,4 +1,5 @@
 <script>
+  import html2canvas from 'html2canvas';
   import { browser } from '$app/environment';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
@@ -16,6 +17,7 @@
   let attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', matchId: '' }));
   let guess = '';
   let shareSuccess = false;
+  let results;
 
   $: selectedWord = data?.body?.selectedWord;
   $: currentAttempt = attempts.filter(({guess}) => !!guess).length;
@@ -76,7 +78,11 @@
   </p>
 
   <!-- Health/Score -->
-  <div class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10">
+  <div
+    bind:this={results}
+    class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10"
+    id="results"
+  >
     <Health {attempts} />
 
     {#if gameState !== stateEnum.GUESSING}
@@ -100,7 +106,7 @@
   </div>
 
   <!-- Info Accordion -->
-  <div class="mt-10 col-span-full">
+  <div class="mt-10 mb-20 col-span-full">
     <Accordion summary="Rules">
       <div>
         <p class="text-sm text-zinc-300">
@@ -156,7 +162,7 @@
     </Accordion>
   </div>
 
-  <!-- {#if gameState !== stateEnum.GUESSING}
+  {#if gameState !== stateEnum.GUESSING}
   <button
     id="share"
     class="
@@ -166,18 +172,24 @@
     "
     class:success={shareSuccess}
     on:click={async () => {
-      if (navigator.clipboard) {
-        const red = `❤️`;
-        const black = `🖤`;
-        let text = `${Array.from(attempts, ({matchId}) => !matchId ? black : red ).join('')} "What's the word?"`
-        await navigator.clipboard.writeText(text);
-        shareSuccess = true;
-      }
+      const img = await html2canvas(results, { scrollY: -window.scrollY, onclone: (doc) => {
+        const r = doc.getElementById('results');
+        r.style.backgroundColor = 'black';
+        r.style.padding = '1rem';
+      } });
+      await img.toBlob(async (blob) => {
+        if (navigator.clipboard) {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+          shareSuccess = true;
+        }
+      });      
     }}
   >
     <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
   </button>
-  {/if} -->
+  {/if}
 </main>
 
 <style>
@@ -215,9 +227,27 @@
     @apply text-gray-50;
     @apply text-lg;
     text-align: center;
-    color: #fff;
     opacity: 0;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  #share::after {
+    content: 'copy your results to share';
+    position: absolute;
+    bottom: 50%;
+    right: 40px;
+    width: 150px;
+    transform: translateY(50%) translateX(-20%);
+    @apply text-gray-50;
+    @apply text-base;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  }
+
+  #share.success::after {
+    opacity: 0;
+    transform: translateY(50%) translateX(-60%);
   }
 
   summary::marker {
