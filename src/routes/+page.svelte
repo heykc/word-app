@@ -18,6 +18,7 @@
   let guess = '';
   let shareSuccess = false;
   let results;
+  let error;
 
   $: selectedWord = data?.body?.selectedWord;
   $: currentAttempt = attempts.filter(({guess}) => !!guess).length;
@@ -67,7 +68,13 @@
   <title>What's the word?</title>
 </svelte:head>
 
-<main class="grid grid-cols-3 mt-10">
+<main class="grid grid-cols-3 mt-10 relative">
+  <!-- Error -->
+  {#if error}
+    <div class=" w-80 flex fixed bottom-4 right-4 z-50 bg-red-600/50 px-4 py-2 text-zinc-50 text-base rounded-md">
+      {error}
+    </div>
+  {/if}
   <!-- Result Message -->
   <p class="col-start-2 columns-1 text-center text-3xl">
     {#if gameState === stateEnum.FAIL}
@@ -162,7 +169,7 @@
     </Accordion>
   </div>
 
-  {#if gameState !== stateEnum.GUESSING}
+  {#if gameState !== stateEnum.GUESSING && !error}
   <button
     id="share"
     class="
@@ -172,6 +179,9 @@
     "
     class:success={shareSuccess}
     on:click={async () => {
+      if (!navigator.clipboard) {
+        error = 'This browser does not support sharing to the clipboard. Try opening this page in Chrome or Edge.';
+      };
       const img = await html2canvas(results, { scrollY: -window.scrollY, onclone: (doc) => {
         const r = doc.getElementById('results');
         r.style.backgroundColor = 'black';
@@ -232,7 +242,7 @@
   }
 
   #share::after {
-    content: 'copy your results to share';
+    content: 'copy your results to your clipboard';
     position: absolute;
     bottom: 50%;
     right: 40px;
