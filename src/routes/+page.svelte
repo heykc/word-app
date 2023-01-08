@@ -5,6 +5,7 @@
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
+  import { addToast } from '$lib/stores/toast.js';
 
   export let data;
 
@@ -43,9 +44,18 @@
 
   const submitGuess = () => {
     const formattedGuess = formatString(guess);
-    
-    if (!guess || attempts.some(({ guess }) => guess === formattedGuess)) return;
 
+    if (!guess) {
+      addToast('Please enter a guess.');
+      return;
+    }
+
+    if (attempts.some(({ guess }) => guess === formattedGuess)) {
+      addToast(`You already guessed "${guess}".`);
+      guess = '';
+      return;
+    }
+    
     const correct = selectedWord.words.find((w) => w === formattedGuess);
     const newGuess = {
       guess: formattedGuess,
