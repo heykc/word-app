@@ -76,7 +76,7 @@ const parseSynResponse = (res) => {
   const { meta: { id: word, uuid: id, fl, sls }, def } = randomEntry;
   const sense = def[0].sseq[0][0][1];
   const definition = sense.dt[0][1];
-  const example = sense.dt[1]?.[1]?.t?.replace(/\{it.*it\}/, '???') ?? '';
+  const example = sense.dt[1]?.[1]?.t?.replace(/\{it}\w+{\/it}/, '_____') ?? '';
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const near = sense.near_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
