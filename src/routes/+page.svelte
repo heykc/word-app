@@ -28,12 +28,12 @@
       ? stateEnum.FAIL
       : stateEnum.GUESSING;
   $: if (browser) {
-    const localLastWord = window.localStorage.getItem('lastWord') || '';
+    const id = window.localStorage.getItem('id') || '';
     const localAttempts = window.localStorage.getItem('attempts') || '';
 
-    if (localLastWord && selectedWord.id !== localLastWord) {
+    if (id && selectedWord.id !== id) {
       window.localStorage.removeItem('attempts');
-      window.localStorage.removeItem('lastWord');
+      window.localStorage.removeItem('id');
     }
 
     if (localAttempts) {
@@ -44,7 +44,7 @@
     window.localStorage.setItem('attempts', JSON.stringify(attempts));
 
     if (gameState !== stateEnum.GUESSING) {
-      window.localStorage.setItem('lastWord', selectedWord.id);
+      window.localStorage.setItem('id', selectedWord.id);
     }
   }
 
@@ -54,7 +54,7 @@
     if (!guess) return;
 
     const formattedGuess = formatString(guess);
-    const matchId = selectedWord.words[formattedGuess] ? formattedGuess : '';
+    const matchId = selectedWord.words.find((w) => w === formattedGuess) ?? '';
     const newGuess = attempts[currentAttempt];
 
     newGuess.matchId = matchId;
@@ -93,7 +93,8 @@
     <Health {attempts} />
 
     {#if gameState !== stateEnum.GUESSING}
-      {@const match = selectedWord.words[attempts.find(({matchId}) => matchId)?.matchId]}
+      {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
+      {@const match = selectedWord.words.find((w) => w === matchId)}
       {@const score = match?.score ?? 0}
 
       <div class="self-center text-8xl text-zinc-200 font-bold text-center relative w-fit">
@@ -108,7 +109,10 @@
 
     <!-- Definition -->
     <p class="col-start-2 columns-1 p-2 mt-5">
-      <em>{selectedWord.wordType}</em>. {selectedWord.definition}
+      <span><em>{selectedWord.wordType}</em>. {selectedWord.definition}.</span>
+      {#if selectedWord.example}
+        <span><i>Example:</i> {selectedWord.example}</span>
+      {/if}
     </p>
   </div>
 
@@ -159,9 +163,9 @@
       {#if gameState !== stateEnum.GUESSING}
         {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
         <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
-          {#each Object.entries(selectedWord.words) as [id, { word, score }]}
-            <li class="flex justify-between { matchId === id ? 'font-bold text-green-300' : '' }">
-              {word} <span class="font-semibold">{score}</span>
+          {#each selectedWord.words as word}
+            <li class="flex justify-between { matchId === word ? 'font-bold text-green-300' : '' }">
+              {word}
             </li>
           {/each}
         </ul>
@@ -169,7 +173,7 @@
     </Accordion>
   </div>
 
-  {#if gameState !== stateEnum.GUESSING && !error}
+  <!-- {#if gameState !== stateEnum.GUESSING && !error}
   <button
     id="share"
     class="
@@ -199,7 +203,7 @@
   >
     <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
   </button>
-  {/if}
+  {/if} -->
 </main>
 
 <style>
