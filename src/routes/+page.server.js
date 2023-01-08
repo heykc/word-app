@@ -77,6 +77,31 @@ const getWord = async (fetch, searchWord = '') => {
   throw error(500, 'Failed to fetch random word');
 };
 
+const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+const parseSynResponse = (res) => {
+  const validEntries = res.filter(({ meta }) => meta && /^\w+$/.test(meta.id))
+  const randomEntry = getRandom(validEntries);
+  const { meta: { id: word, uuid: id, fl, sls }, def } = randomEntry;
+  const sense = def[0].sseq[0][0][1];
+  const definition = sense.dt[0][1];
+  const example = sense.dt[1]?.[1]?.t?.replace(/\{it.*it\}/, '???') ?? '';
+  const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
+  const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
+  const near = sense.near_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
+  const words = [...synonyms, ...related, ...near, word];
+  const wordTypeMeta = sls?.find((s) => s.includes (' of '))?.split(' of ')[0] ?? '';
+  const wordType = wordTypeMeta ? `${wordTypeMeta} | ${fl}` : fl;
+
+  return {
+    id,
+    definition,
+    example,
+    wordType,
+    words,
+  };
+};
+
 // const getFrequencies = async (fetch, words) => {
 //   const wordsWithFrequencies = await Promise.all(Object.values(words).map(({ word }) => {
 //     return getWord(fetch, word);
@@ -121,7 +146,7 @@ const getSynonyms = async (fetch, word) => {
       return getSynonyms(fetch, data[0]);
     }
 
-    return parseSynonyms(data[0]);
+    return parseSynResponse(data);
   }
 };
 
