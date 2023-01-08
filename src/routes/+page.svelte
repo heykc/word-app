@@ -27,24 +27,23 @@
     : attempts.every(({guess}) => guess)
       ? stateEnum.FAIL
       : stateEnum.GUESSING;
+  $: if (gameState !== stateEnum.GUESSING) {
+    window.localStorage.setItem('id', selectedWord.id);
+  }
   $: if (browser) {
     const id = window.localStorage.getItem('id') || '';
     const localAttempts = window.localStorage.getItem('attempts') || '';
 
-    if (id && selectedWord.id !== id) {
+    if (!!id && selectedWord.id !== id) {
       window.localStorage.removeItem('attempts');
       window.localStorage.removeItem('id');
+
+      attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', matchId: '' }));
+      window.localStorage.setItem('attempts', JSON.stringify(attempts));
     }
 
     if (localAttempts) {
       attempts = JSON.parse(window.localStorage.getItem('attempts'));
-    }
-  }
-  $: if (browser) {
-    window.localStorage.setItem('attempts', JSON.stringify(attempts));
-
-    if (gameState !== stateEnum.GUESSING) {
-      window.localStorage.setItem('id', selectedWord.id);
     }
   }
 
@@ -60,7 +59,16 @@
     newGuess.matchId = matchId;
     newGuess.guess = guess;
     attempts[currentAttempt] = newGuess;
+    addToStorage();
     guess = '';
+  }
+
+  const addToStorage = () => {
+    window.localStorage.setItem('attempts', JSON.stringify(attempts));
+
+    if (gameState !== stateEnum.GUESSING) {
+      window.localStorage.setItem('id', selectedWord.id);
+    }
   }
 </script>
 
