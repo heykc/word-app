@@ -71,12 +71,6 @@
 </svelte:head>
 
 <main class="grid grid-cols-3 mt-10 relative">
-  <!-- Error -->
-  {#if error}
-    <div class=" w-80 flex fixed bottom-4 right-4 z-50 bg-red-600/50 px-4 py-2 text-zinc-50 text-base rounded-md">
-      {error}
-    </div>
-  {/if}
   <!-- Result Message -->
   {#if gameDone}
     <p class="col-start-2 columns-1 text-center text-3xl">
@@ -86,36 +80,33 @@
         Better luck next time.
       {/if}
     </p>
+
+    <div class="col-start-2 columns-1 flex justify-center mt-5 mb-10">
+      <p class="relative text-center text-6xl min-w-[3.5rem]">
+        <span>{correctAnswers.length}</span>
+        <span class="text-sm text-bold absolute bottom-2 -right-full"> / {selectedWord.words.length} words</span>
+      </p>
+    </div>
+  {:else}
+    <div class="col-start-2 columns-1 flex justify-between items-center w-full mb-14">
+      <Health {health} />
+      <p class="flex justify-end text-lg">
+        {correctAnswers.length} / {selectedWord.words.length} words
+      </p>
+    </div>
+
+    <TextInput bind:text={guess} {submitGuess} />
   {/if}
 
+  <!-- Definition -->
+  <p class="col-start-2 columns-1 p-2 mt-5">
+    <span><em>{selectedWord.wordType}</em>. {selectedWord.definition}.</span>
+    {#if selectedWord.example}
+      <span><i>Example:</i> {selectedWord.example}</span>
+    {/if}
+  </p>
+
   <!-- Health/Score -->
-  <div
-    bind:this={results}
-    class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10"
-    id="results"
-  >
-    {#if !gameDone}
-      <Health {health} />
-    {:else}
-      <div class="self-center text-8xl text-zinc-200 font-bold text-center relative w-fit">
-        <span class="relative">{correctAnswers.length}</span>
-        <span class="text-sm text-bold absolute bottom-2 -right-full"> / {selectedWord.words.length} words</span>
-      </div>
-    {/if}
-
-    <!-- Guess Input -->
-    {#if !gameDone}
-      <TextInput bind:text={guess} {submitGuess} />
-    {/if}
-
-    <!-- Definition -->
-    <p class="col-start-2 columns-1 p-2 mt-5">
-      <span><em>{selectedWord.wordType}</em>. {selectedWord.definition}.</span>
-      {#if selectedWord.example}
-        <span><i>Example:</i> {selectedWord.example}</span>
-      {/if}
-    </p>
-  </div>
 
   <!-- Info Accordion -->
   <div class="mt-10 mb-20 col-span-full">
