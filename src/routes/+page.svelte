@@ -154,11 +154,15 @@
       {/each}
     </Accordion>
     <Accordion disabled={gameState === stateEnum.GUESSING}>
-      <div slot="summary">
+      <div slot="summary" class="flex items-center">
         Possible Answers
-        {#if gameState === stateEnum.GUESSING}
-          <Icon name="fa-solid fa-lock" classNames="text-sm" />
-        {/if}
+        <span class="
+           w-fit h-4 px-1 rounded-full flex items-center justify-center
+          {gameState === stateEnum.GUESSING ? 'bg-zinc-400' : 'bg-zinc-100'}
+          text-slate-900 text-sm font-semibold ml-3
+        ">
+          {selectedWord.words.length}
+        </span>
       </div>
       {#if gameState !== stateEnum.GUESSING}
         {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
