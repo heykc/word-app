@@ -42,9 +42,10 @@
   const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
 
   const submitGuess = () => {
-    if (!guess) return;
-
     const formattedGuess = formatString(guess);
+    
+    if (!guess || attempts.some(({ guess }) => guess === formattedGuess)) return;
+
     const correct = selectedWord.words.find((w) => w === formattedGuess);
     const newGuess = {
       guess: formattedGuess,
