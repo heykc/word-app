@@ -80,7 +80,7 @@ const parseSynResponse = (res) => {
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const near = sense.near_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const words = [...synonyms, ...related, ...near, word];
+  const words = [...synonyms, ...related, ...near, word].filter((w) => /^\w+$/.test(w));
   const wordTypeMeta = sls?.find((s) => s.includes (' of '))?.split(' of ')[0] ?? '';
   const wordType = wordTypeMeta ? `${wordTypeMeta} | ${fl}` : fl;
 
