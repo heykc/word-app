@@ -75,7 +75,7 @@ const parseSynResponse = (res) => {
   const { meta: { id: word, uuid: id }, fl, sls, def } = randomEntry;
   const sense = def[0].sseq[0][0][1];
   const definition = sense.dt[0][1].replace(/\{\/?\w+\}/g, '').trim();
-  const regex = new RegExp(`{it}${word}\\w+(ed|es|s|ing){/it}`, 'g');
+  const regex = new RegExp(`{it}${word}\\w*(ed|es|s|ing)?{/it}`, 'g');
   const example = sense.dt[1]?.[1]?.[0]?.t?.replace(regex, '____$1') ?? '';
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
