@@ -11,18 +11,13 @@
 
   let attempts = [];
   let guess = '';
-  let shareSuccess = false;
-  let results;
-  let error;
+  let correctAnimation = false;
 
   $: selectedWord = data?.body?.selectedWord;
   $: correctAnswers = attempts.filter(({ correct }) => correct);
   $: health = 3 - attempts.filter(({ correct }) => !correct).length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
-  $: if (browser && gameDone) {
-    window.localStorage.setItem('id', selectedWord.id);
-  }
   $: if (browser) {
     const id = window.localStorage.getItem('id') || '';
     const localAttempts = window.localStorage.getItem('attempts') || '';
@@ -63,6 +58,13 @@
       correct
     };
 
+    if (correct) {
+      correctAnimation = true;
+      setTimeout(() => {
+        correctAnimation = false;
+      }, 700);
+    }
+
     attempts = [...attempts, newGuess];
     addToStorage();
     guess = '';
@@ -102,7 +104,9 @@
     <div class="col-start-2 columns-1 flex justify-between items-center w-full mb-14">
       <Health {health} />
       <p class="flex justify-end text-lg">
-        {correctAnswers.length} / {selectedWord.words.length} words
+        <span class="correct-answers" class:correct={correctAnimation}>
+          {correctAnswers.length}&nbsp;/ {selectedWord.words.length} words
+        </span>
       </p>
     </div>
 
@@ -272,5 +276,14 @@
 
   summary::marker {
     font-size: 0;
+  }
+
+  .correct-answers {
+    transition: transform 0.3s ease-in-out, color 0.2s ease-in-out;
+  }
+
+  .correct {
+    @apply text-green-400;
+    transform: scale(1.2);
   }
 </style>
