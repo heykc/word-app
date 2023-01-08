@@ -6,28 +6,20 @@
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
 
-  const stateEnum = {
-    GUESSING: 'guessing',
-    FAIL: 'fail',
-    SUCCESS: 'success',
-  };
-
   export let data;
 
-  let attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', matchId: '' }));
+  let attempts = [];
   let guess = '';
   let shareSuccess = false;
   let results;
   let error;
 
   $: selectedWord = data?.body?.selectedWord;
-  $: currentAttempt = attempts.filter(({guess}) => !!guess).length;
-  $: gameState = attempts.some(({matchId}) => matchId)
-    ? stateEnum.SUCCESS
-    : attempts.every(({guess}) => guess)
-      ? stateEnum.FAIL
-      : stateEnum.GUESSING;
-  $: if (gameState !== stateEnum.GUESSING) {
+  $: correctAnswers = attempts.filter(({ correct }) => correct);
+  $: health = 3 - attempts.filter(({ correct }) => !correct).length;
+  $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
+  $: gameSuccess = correctAnswers.length;
+  $: if (browser && gameDone) {
     window.localStorage.setItem('id', selectedWord.id);
   }
   $: if (browser) {
@@ -38,7 +30,7 @@
       window.localStorage.removeItem('attempts');
       window.localStorage.removeItem('id');
 
-      attempts = Array.from(Array(3), (_, id) => ({ id, guess: '', matchId: '' }));
+      attempts = [];
       window.localStorage.setItem('attempts', JSON.stringify(attempts));
     }
 
@@ -53,12 +45,13 @@
     if (!guess) return;
 
     const formattedGuess = formatString(guess);
-    const matchId = selectedWord.words.find((w) => w === formattedGuess) ?? '';
-    const newGuess = attempts[currentAttempt];
+    const correct = selectedWord.words.find((w) => w === formattedGuess);
+    const newGuess = {
+      guess: formattedGuess,
+      correct
+    };
 
-    newGuess.matchId = matchId;
-    newGuess.guess = guess;
-    attempts[currentAttempt] = newGuess;
+    attempts = [...attempts, newGuess];
     addToStorage();
     guess = '';
   }
@@ -66,7 +59,7 @@
   const addToStorage = () => {
     window.localStorage.setItem('attempts', JSON.stringify(attempts));
 
-    if (gameState !== stateEnum.GUESSING) {
+    if (gameDone) {
       window.localStorage.setItem('id', selectedWord.id);
     }
   }
@@ -84,13 +77,15 @@
     </div>
   {/if}
   <!-- Result Message -->
-  <p class="col-start-2 columns-1 text-center text-3xl">
-    {#if gameState === stateEnum.FAIL}
-      Better luck next time.
-    {:else if gameState === stateEnum.SUCCESS}
-      Congratulations!
-    {/if}
-  </p>
+  {#if gameDone}
+    <p class="col-start-2 columns-1 text-center text-3xl">
+      {#if gameSuccess}
+        Congratulations!
+      {:else}
+        Better luck next time.
+      {/if}
+    </p>
+  {/if}
 
   <!-- Health/Score -->
   <div
@@ -98,20 +93,17 @@
     class="col-start-2 columns-1 flex flex-col content-center flex-wrap mt-5 mb-10"
     id="results"
   >
-    <Health {attempts} />
-
-    {#if gameState !== stateEnum.GUESSING}
-      {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
-      {@const match = selectedWord.words.find((w) => w === matchId)}
-      {@const score = match?.score ?? 0}
-
+    {#if !gameDone}
+      <Health {health} />
+    {:else}
       <div class="self-center text-8xl text-zinc-200 font-bold text-center relative w-fit">
-        {score} <span class="text-sm text-bold absolute bottom-2 -right-8">PTS</span>
+        <span class="relative">{correctAnswers.length}</span>
+        <span class="text-sm text-bold absolute bottom-2 -right-full"> / {selectedWord.words.length} words</span>
       </div>
     {/if}
 
     <!-- Guess Input -->
-    {#if gameState === stateEnum.GUESSING}
+    {#if !gameDone}
       <TextInput bind:text={guess} {submitGuess} />
     {/if}
 
@@ -138,21 +130,21 @@
         </p>
       </div>
     </Accordion>
-    <Accordion disabled={attempts.every(({guess}) => !guess)}>
+    <Accordion disabled={!attempts.length}>
       <div slot="summary" class="flex items-center">
         <span>Attempts</span>
         <span class="
           w-4 h-4 rounded-full flex items-center justify-center
-          {attempts.every(({guess}) => !guess) ? 'bg-zinc-400' : 'bg-zinc-100'}
+          {!attempts.length ? 'bg-zinc-400' : 'bg-zinc-100'}
           text-slate-900 text-sm font-semibold ml-3
         ">
-          {currentAttempt}
+          {attempts.length}
         </span>
       </div>
-      {#each attempts.filter(({ guess }) => guess) as {guess, matchId}}
+      {#each attempts as {guess, correct}}
         <p class="text-sm text-zinc-200 pt-2">
           {guess}
-          {#if matchId}
+          {#if correct}
             <span class="text-green-400">✓</span>
           {:else}
             <span class="text-red-400">✗</span>
@@ -160,22 +152,22 @@
         </p>
       {/each}
     </Accordion>
-    <Accordion disabled={gameState === stateEnum.GUESSING}>
+    <Accordion disabled={!gameDone}>
       <div slot="summary" class="flex items-center">
         Possible Answers
         <span class="
            w-fit h-4 px-1 rounded-full flex items-center justify-center
-          {gameState === stateEnum.GUESSING ? 'bg-zinc-400' : 'bg-zinc-100'}
+          {gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
           text-slate-900 text-sm font-semibold ml-3
         ">
           {selectedWord.words.length}
         </span>
       </div>
-      {#if gameState !== stateEnum.GUESSING}
-        {@const matchId = attempts.find(({matchId}) => matchId)?.matchId}
+      {#if gameDone}
+        {@const attemptedWords = attempts.map(({ guess }) => guess)}
         <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
           {#each selectedWord.words as word}
-            <li class="flex justify-between { matchId === word ? 'font-bold text-green-300' : '' }">
+            <li class="flex justify-between { attemptedWords.includes(word) ? 'font-bold text-green-300' : '' }">
               {word}
             </li>
           {/each}

@@ -1,14 +1,15 @@
 <script>
   import Icon from '$lib/Icon.svelte';
 
-  export let attempts;
+  export let health;
+
+  $: healthArr = Array.from({ length: 3 }, (_, i) => i);
 </script>
 
-<div class="flex flex-row-reverse justify-center gap-2 mb-6 text-2xl">
-  {#each attempts as { guess, matchId }}
-    {@const incorrect = guess && !matchId}
-    {@const name = incorrect ? 'fa-regular fa-heart' : 'fa-solid fa-heart'}
-    {@const classNames = incorrect ? 'text-zinc-400' : 'text-red-400'}
+<div class="flex justify-center gap-2 mb-6 text-2xl">
+  {#each healthArr as i}
+    {@const name = i < health ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
+    {@const classNames = i < health ? 'text-red-400' : 'text-zinc-400'}
 
     <Icon {name} {classNames} />
   {/each}
