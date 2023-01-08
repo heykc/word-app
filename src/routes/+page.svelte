@@ -121,9 +121,8 @@
     <Accordion summary="Rules">
       <div>
         <p class="text-sm text-zinc-300">
-          Every day, a new definition is posted. You have three attempts to guess a word that matches the definition.
-          You are awarded points based on the frequency of the word in the English language. The less common the word,
-          the more points you earn.
+          Every day, a new definition is posted. You must try and guess as many words that fit the definition until you
+          make 3 incorrect guesses. The more words you guess correctly, the more points you earn!
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
