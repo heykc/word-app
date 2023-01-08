@@ -37,12 +37,7 @@ export async function load({ fetch }) {
 
   // sometimes thesaurus api doesn't have an entry for the word
   // so getSynonyms will recursively call itself until it finds a word
-  const selectedWord = await getSynonyms(fetch, randWord.word);
-  
-  // const frequencies = await getFrequencies(fetch, selectedWord.words);
-  // frequencies.forEach(({ word, score }) => {
-  //   selectedWord.words[formatString(word)].score = score;
-  // });
+  const selectedWord = await getSynonyms(fetch, randWord);
 
   await setCache(fetch, {
     selectedWord,
@@ -66,12 +61,8 @@ const getWord = async (fetch, searchWord = '') => {
   });
 
   if (res.ok) {
-    const { word, frequency = '2' } = await res.json();
-    return { word, score: (7 - +frequency).toFixed(1) };
-  }
-
-  if (res.status === 404) {
-    return { word: searchWord, score: '5.0' };
+    const { word } = await res.json();
+    return word;
   }
 
   throw error(500, 'Failed to fetch random word');
@@ -101,39 +92,6 @@ const parseSynResponse = (res) => {
     words,
   };
 };
-
-// const getFrequencies = async (fetch, words) => {
-//   const wordsWithFrequencies = await Promise.all(Object.values(words).map(({ word }) => {
-//     return getWord(fetch, word);
-//   }));
-
-//   return wordsWithFrequencies;
-// };
-
-// const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definitions }) => {
-//   const index = Math.floor(Math.random() * syns.length);
-//   const definition = definitions[index];
-//   const words = syns[index]
-//     .filter((s) => !definition.includes(s))
-//     .reduce((acc, cur) => {
-//       acc[formatString(cur)] = { word: cur, score: 0 };
-//       return acc;
-//     }, {});
-//   let wordType = fl;
-
-//   words[formatString(word)] = { word, score: 0 };
-
-//   if (wordType === 'noun' && sls?.some((s) => s.includes('plural'))) {
-//     wordType = 'plural noun';
-//   }
-
-//   return {
-//     id: word,
-//     definition,
-//     words,
-//     wordType,
-//   }
-// };
 
 const getSynonyms = async (fetch, word) => {
   const encodedWord = encodeURI(word.toLowerCase());
