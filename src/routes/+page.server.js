@@ -17,7 +17,7 @@ dayjs.extend(timezone);
 
 const tz = 'America/New_York';
 
-const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
+// const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ fetch }) {
@@ -39,10 +39,10 @@ export async function load({ fetch }) {
   // so getSynonyms will recursively call itself until it finds a word
   const selectedWord = await getSynonyms(fetch, randWord.word);
   
-  const frequencies = await getFrequencies(fetch, selectedWord.words);
-  frequencies.forEach(({ word, score }) => {
-    selectedWord.words[formatString(word)].score = score;
-  });
+  // const frequencies = await getFrequencies(fetch, selectedWord.words);
+  // frequencies.forEach(({ word, score }) => {
+  //   selectedWord.words[formatString(word)].score = score;
+  // });
 
   await setCache(fetch, {
     selectedWord,
@@ -77,38 +77,38 @@ const getWord = async (fetch, searchWord = '') => {
   throw error(500, 'Failed to fetch random word');
 };
 
-const getFrequencies = async (fetch, words) => {
-  const wordsWithFrequencies = await Promise.all(Object.values(words).map(({ word }) => {
-    return getWord(fetch, word);
-  }));
+// const getFrequencies = async (fetch, words) => {
+//   const wordsWithFrequencies = await Promise.all(Object.values(words).map(({ word }) => {
+//     return getWord(fetch, word);
+//   }));
 
-  return wordsWithFrequencies;
-};
+//   return wordsWithFrequencies;
+// };
 
-const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definitions }) => {
-  const index = Math.floor(Math.random() * syns.length);
-  const definition = definitions[index];
-  const words = syns[index]
-    .filter((s) => !definition.includes(s))
-    .reduce((acc, cur) => {
-      acc[formatString(cur)] = { word: cur, score: 0 };
-      return acc;
-    }, {});
-  let wordType = fl;
+// const parseSynonyms = ({ meta: { id: word, syns }, fl, sls, shortdef: definitions }) => {
+//   const index = Math.floor(Math.random() * syns.length);
+//   const definition = definitions[index];
+//   const words = syns[index]
+//     .filter((s) => !definition.includes(s))
+//     .reduce((acc, cur) => {
+//       acc[formatString(cur)] = { word: cur, score: 0 };
+//       return acc;
+//     }, {});
+//   let wordType = fl;
 
-  words[formatString(word)] = { word, score: 0 };
+//   words[formatString(word)] = { word, score: 0 };
 
-  if (wordType === 'noun' && sls?.some((s) => s.includes('plural'))) {
-    wordType = 'plural noun';
-  }
+//   if (wordType === 'noun' && sls?.some((s) => s.includes('plural'))) {
+//     wordType = 'plural noun';
+//   }
 
-  return {
-    id: word,
-    definition,
-    words,
-    wordType,
-  }
-};
+//   return {
+//     id: word,
+//     definition,
+//     words,
+//     wordType,
+//   }
+// };
 
 const getSynonyms = async (fetch, word) => {
   const encodedWord = encodeURI(word.toLowerCase());
