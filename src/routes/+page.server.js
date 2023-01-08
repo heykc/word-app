@@ -74,14 +74,17 @@ const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const parseSynResponse = (res) => {
   const validEntries = res.filter(({ meta }) => meta && /^\w+$/.test(meta.id))
   const randomEntry = getRandom(validEntries);
-  const { meta: { id: word, uuid: id, fl, sls }, def } = randomEntry;
+  const { meta: { id: word, uuid: id }, fl, sls, def } = randomEntry;
   const sense = def[0].sseq[0][0][1];
-  const definition = sense.dt[0][1];
-  const example = sense.dt[1]?.[1]?.t?.replace(/\{it}\w+{\/it}/, '_____') ?? '';
+  const definition = sense.dt[0][1].replace(/\{\/?\w+\}/g, '').trim();
+  const regex = new RegExp(`{it}${word}(ed|s|es|ing)?{/it}`, 'g');
+  const example = sense.dt[1]?.[1]?.[0]?.t?.replace(regex, '____$1') ?? '';
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
+  const similar = sense.sim_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const near = sense.near_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const words = [...synonyms, ...related, ...near, word].filter((w) => /^\w+$/.test(w));
+  const words = [...synonyms, ...related, ...similar, ...near, word].filter((w) => /^\w+$/.test(w) && !definition.includes(w));
+  console.log({word, synonyms, related, near, words});
   const wordTypeMeta = sls?.find((s) => s.includes (' of '))?.split(' of ')[0] ?? '';
   const wordType = wordTypeMeta ? `${wordTypeMeta} | ${fl}` : fl;
 
@@ -101,7 +104,7 @@ const getSynonyms = async (fetch, word) => {
   if (res.ok) {
     const data = await res.json();
 
-    if (!data[0].meta) {
+    if (!data[0].meta?.id) {
       return getSynonyms(fetch, data[0]);
     }
 
