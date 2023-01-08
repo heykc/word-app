@@ -27,12 +27,13 @@
     const id = window.localStorage.getItem('id') || '';
     const localAttempts = window.localStorage.getItem('attempts') || '';
 
-    if (!!id && selectedWord.id !== id) {
+    if (selectedWord.id !== id) {
       window.localStorage.removeItem('attempts');
       window.localStorage.removeItem('id');
 
       attempts = [];
       window.localStorage.setItem('attempts', JSON.stringify(attempts));
+      window.localStorage.setItem('id', selectedWord.id);
     }
 
     if (localAttempts) {
