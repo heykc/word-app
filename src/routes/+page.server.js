@@ -6,6 +6,7 @@ import {
   UPSTASH_TOKEN,
   WORDS_API_URL,
   WORDS_API_HOST,
+  UPSTASH_ENDPOINT,
 } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import utc from 'dayjs/plugin/utc';
@@ -109,7 +110,7 @@ const getSynonyms = async (fetch, word) => {
 };
 
 const getCache = async (fetch) => {
-  const res = await fetch(`${UPSTASH_URL}/get/cache`, {
+  const res = await fetch(`${UPSTASH_URL}/get/${UPSTASH_ENDPOINT}`, {
     headers: {
       Authorization: `Bearer ${UPSTASH_TOKEN}`,
     },
@@ -127,7 +128,7 @@ const getCache = async (fetch) => {
 };
 
 const setCache = async (fetch, cache) => {
-  const res = await fetch(`${UPSTASH_URL}/set/cache`, {
+  const res = await fetch(`${UPSTASH_URL}/set/${UPSTASH_ENDPOINT}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${UPSTASH_TOKEN}`,
