@@ -1,4 +1,6 @@
 <script>
+  import * as Sentry from "@sentry/svelte";
+  import { BrowserTracing } from "@sentry/tracing";
   import { inject } from '@vercel/analytics';
   import '../app.css';
   import Icon from '$lib/Icon.svelte';
@@ -8,6 +10,17 @@
   if (!import.meta.env.DEV) {
     inject();
   }
+
+  // Initialize the Sentry SDK here
+  Sentry.init({
+    dsn: "https://3270071879a84dc997719701d0c4ae5b@o4504475346796544.ingest.sentry.io/4504475348303872",
+    integrations: [new BrowserTracing()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+  });
 </script>
 
 <header class="w-full p-5">

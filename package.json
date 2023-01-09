@@ -29,6 +29,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sentry/svelte": "^7.29.0",
+		"@sentry/tracing": "^7.29.0",
 		"@vercel/analytics": "^0.1.6",
 		"dayjs": "^1.11.7",
 		"html2canvas": "^1.4.1"
