@@ -41,7 +41,9 @@
 </details>
 
 <style>
-  summary::marker {
+  summary::marker,
+  details summary::-webkit-details-marker {
+    display:none;
     font-size: 0;
   }
 
@@ -52,18 +54,4 @@
   :global(details[open] .arrow) {
     transform: rotate(180deg);
   }
-
-  /* :global(.accordion-details > summary) {
-    position: relative;
-  }
-
-  :global(.accordion-details > summary::after) {
-    content: '▶';
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5rem;
-    margin-left: 0.5rem;
-  } */
 </style>
