@@ -149,7 +149,7 @@
       <div slot="summary" class="flex items-center">
         <span>Attempts</span>
         <span class="
-          w-4 h-4 rounded-full flex items-center justify-center
+          w-fit h-4 px-1 rounded-full flex items-center justify-center
           {!attempts.length ? 'bg-zinc-400' : 'bg-zinc-100'}
           text-slate-900 text-sm font-semibold ml-3
         ">
