@@ -11,17 +11,17 @@
     let thisId = id;
     setTimeout(() => {
       removeToast(thisId);
-    }, 5000);
+    }, 2000);
   });
 </script>
 
 <div
-  in:fly={{ y: 100, duration: 400 }}
+  in:fly={{ y: -100, duration: 400 }}
   out:fade={{ duration: 200 }}
-  class="toast rounded-md p-3 bg-yellow-400/30 border-yellow-800/40 border-2 w-full relative"
+  class="toast rounded-md p-3 text-zinc-50 bg-cyan-700 border-cyan-800/40 border-2 w-full relative"
 >
   <button
-    class="absolute top-0 right-0 w-6 h-6 rounded-full"
+    class="absolute top-0 right-0 w-6 h-6 rounded-full "
     on:click={() => removeToast(id)}
   >
     <Icon name="fa-solid fa-xmark" />
