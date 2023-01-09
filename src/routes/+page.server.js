@@ -78,9 +78,9 @@ const parseSynResponse = (res) => {
   const regex = new RegExp(`{it}\\w+{/it}`, 'g');
   let example = sense.dt[1]?.[1]?.[0]?.t?.replace(regex, '____') ?? '';
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const similar = sense.sim_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const words = [...synonyms, ...related, ...similar, word]
+  const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
+  const words = [word, ...synonyms, ...similar, ...related]
     .filter((w) =>
       /^\w+$/.test(w)
       && !definition.includes(w)
