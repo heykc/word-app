@@ -9,13 +9,15 @@
 
   export let data;
 
+  const totalHealth = 5;
+
   let attempts = [];
   let guess = '';
   let correctAnimation = false;
 
   $: selectedWord = data?.body?.selectedWord;
   $: correctAnswers = attempts.filter(({ correct }) => correct);
-  $: health = 5 - attempts.filter(({ correct }) => !correct).length;
+  $: health = totalHealth - attempts.filter(({ correct }) => !correct).length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
   $: if (browser) {
