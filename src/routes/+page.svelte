@@ -1,6 +1,6 @@
 <script>
-  import html2canvas from 'html2canvas';
   import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
@@ -20,7 +20,8 @@
   $: health = totalHealth - attempts.filter(({ correct }) => !correct).length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
-  $: if (browser) {
+
+  onMount(() => {
     const id = window.localStorage.getItem('id') || '';
     const localAttempts = window.localStorage.getItem('attempts') || '';
 
@@ -36,7 +37,7 @@
     if (localAttempts) {
       attempts = JSON.parse(window.localStorage.getItem('attempts'));
     }
-  }
+  })
 
   const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
 
