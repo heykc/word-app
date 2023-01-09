@@ -89,6 +89,11 @@
           addToast('Results copied to clipboard!');
         })
         .catch((error) => {
+          if (error.name === 'NotAllowedError') {
+            addToast('Please allow clipboard access in your browser settings, or try again in a different browser.');
+            captureMessage('Clipboard access not allowed.');
+            return;
+          }
           addToast('There was an error when attempting to copy results to clipboard. Please try again.');
           captureException(error);
         });
