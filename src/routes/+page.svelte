@@ -80,6 +80,20 @@
       window.localStorage.setItem('id', selectedWord.id);
     }
   }
+
+  const shareResults = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`I got ${correctAnswers.length} out of ${selectedWord.words.length} words today on What's the Word! https://word.heykc.co`)
+        .then(() => {
+          addToast('Results copied to clipboard!');
+        })
+        .catch((error) => {
+          addToast('There was an error when attempting to copy results to clipboard. Please try again.');
+        });
+    } else {
+      addToast('Copying to clipboard is not supported in this browser. Please try again in a different browser.');
+    }
+  };
 </script>
 
 <svelte:head>
@@ -123,8 +137,6 @@
       <span><i>Example:</i> {selectedWord.example}</span>
     {/if}
   </p>
-
-  <!-- Health/Score -->
 
   <!-- Info Accordion -->
   <div class="mt-10 mb-20 col-span-full">
@@ -193,37 +205,16 @@
     </Accordion>
   </div>
 
-  <!-- {#if gameState !== stateEnum.GUESSING && !error}
-  <button
-    id="share"
-    class="
-      fixed bottom-0 right-0 w-14 h-14 text-lg m-5 p-2
-      rounded-full text-slate-900
-      {shareSuccess ? 'bg-green-400' : 'bg-zinc-200'}
-    "
-    class:success={shareSuccess}
-    on:click={async () => {
-      if (!navigator.clipboard) {
-        error = 'This browser does not support sharing to the clipboard. Try opening this page in Chrome or Edge.';
-      };
-      const img = await html2canvas(results, { scrollY: -window.scrollY, onclone: (doc) => {
-        const r = doc.getElementById('results');
-        r.style.backgroundColor = 'black';
-        r.style.padding = '1rem';
-      } });
-      await img.toBlob(async (blob) => {
-        if (navigator.clipboard) {
-          await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-          ]);
-          shareSuccess = true;
-        }
-      });      
-    }}
-  >
-    <Icon name="fa-solid fa-{shareSuccess ? 'check' : 'share'}" />
-  </button>
-  {/if} -->
+  {#if gameDone}
+    <div class="fixed bottom-2 right-2 w-14 h-14">
+      <button
+        class="w-14 h-14 text-lg bg-zinc-200 text-slate-900 rounded-full"
+        on:click={shareResults}
+      >
+        <Icon name="fa-solid fa-share" />
+      </button>
+    </div>
+  {/if}
 </main>
 
 <style>
@@ -242,47 +233,6 @@
     @apply columns-1;
   }
 
-  #share {
-    transition: background-color 0.2s ease-in-out;
-  }
-
-  #share.success::before {
-    opacity: 1;
-    transform: translateY(50%) translateX(-130%);
-    @apply text-green-400;
-  }
-
-  #share::before {
-    content: 'copied!';
-    position: absolute;
-    bottom: 50%;
-    left: 0px;
-    transform: translateY(50%) translateX(-20%);
-    @apply text-gray-50;
-    @apply text-lg;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-  }
-
-  #share::after {
-    content: 'copy your results to your clipboard';
-    position: absolute;
-    bottom: 50%;
-    right: 40px;
-    width: 150px;
-    transform: translateY(50%) translateX(-20%);
-    @apply text-gray-50;
-    @apply text-base;
-    text-align: center;
-    opacity: 1;
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-  }
-
-  #share.success::after {
-    opacity: 0;
-    transform: translateY(50%) translateX(-60%);
-  }
 
   summary::marker {
     font-size: 0;
