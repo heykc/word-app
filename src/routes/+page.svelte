@@ -152,7 +152,7 @@
       <div>
         <p class="text-sm text-zinc-300">
           Every day, a new definition is posted. You must try and guess as many words that fit the definition until you
-          make 3 incorrect guesses. The more words you guess correctly, the more points you earn!
+          make 5 incorrect guesses. The more words you guess correctly, the more points you earn!
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
@@ -239,11 +239,6 @@
   :global(.text-input) {
     @apply col-start-2;
     @apply columns-1;
-  }
-
-
-  summary::marker {
-    font-size: 0;
   }
 
   .correct-answers {
