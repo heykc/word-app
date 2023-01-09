@@ -10,7 +10,7 @@
   }
 </script>
 
-<header class="w-100 p-5">
+<header class="w-full p-5">
   <nav class="w-full">
     <div class="flex flex-wrap justify-between">
       <div class="font-semibold">What's the word?</div>
