@@ -6,7 +6,7 @@
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
   import { addToast } from '$lib/stores/toast.js';
-  import Sentry from '@sentry/browser';
+  import { captureException, captureMessage } from '@sentry/browser';
 
   export let data;
 
@@ -90,11 +90,11 @@
         })
         .catch((error) => {
           addToast('There was an error when attempting to copy results to clipboard. Please try again.');
-          Sentry.captureException(error);
+          captureException(error);
         });
     } else {
       addToast('Copying to clipboard is not supported in this browser. Please try again in a different browser.');
-      Sentry.captureMessage('Copying to clipboard is not supported in this browser.');
+      captureMessage('Copying to clipboard is not supported in this browser.');
     }
   };
 </script>
