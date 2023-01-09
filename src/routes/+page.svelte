@@ -15,7 +15,7 @@
 
   $: selectedWord = data?.body?.selectedWord;
   $: correctAnswers = attempts.filter(({ correct }) => correct);
-  $: health = 3 - attempts.filter(({ correct }) => !correct).length;
+  $: health = 5 - attempts.filter(({ correct }) => !correct).length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
   $: if (browser) {
