@@ -83,7 +83,7 @@
   <title>What's the word?</title>
 </svelte:head>
 
-<main class="grid grid-cols-3 mt-10 relative">
+<main class="grid grid-cols-3 mt-10 w-full max-w-[700px] relative">
   <!-- Result Message -->
   {#if gameDone}
     <p class="col-start-2 columns-1 text-center text-3xl">

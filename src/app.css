@@ -11,5 +11,9 @@
     @apply from-zinc-900;
     @apply text-white;
     @apply h-screen;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
