@@ -166,7 +166,7 @@
         Possible Answers
         <span class="
            w-fit h-4 px-1 rounded-full flex items-center justify-center
-          {gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
+          {!gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
           text-slate-900 text-sm font-semibold ml-3
         ">
           {selectedWord.words.length}
