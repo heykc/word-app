@@ -104,7 +104,7 @@
     </div>
   {:else}
     <div class="col-start-2 columns-1 flex justify-between items-center w-full mb-14">
-      <Health {health} />
+      <Health {health} {totalHealth} />
       <p class="flex justify-end text-lg">
         <span class="correct-answers" class:correct={correctAnimation}>
           {correctAnswers.length}&nbsp;/ {selectedWord.words.length} words

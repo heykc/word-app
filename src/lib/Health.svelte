@@ -3,8 +3,9 @@
   import Icon from '$lib/Icon.svelte';
 
   export let health;
+  export let totalHealth
 
-  $: healthArr = Array.from({ length: 5 }, (_, i) => i);
+  $: healthArr = Array.from({ length: totalHealth }, (_, i) => i);
 </script>
 
 <div class="flex justify-start gap-2 text-xl">
