@@ -133,6 +133,11 @@
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
+          Examples may not match the required word form (present tense, past tense, etc). Pay close
+          attention to any form specifications before the definition.
+        </p>
+
+        <p class="text-sm text-zinc-300 mt-3">
           Disclaimer: I did not create the data set that this app uses, so I cannot guarantee the accuracy of the data.
         </p>
       </div>
