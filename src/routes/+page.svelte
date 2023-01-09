@@ -148,16 +148,18 @@
           {attempts.length}
         </span>
       </div>
-      {#each attempts as {guess, correct}}
-        <p class="text-sm text-zinc-200 pt-2">
-          {guess}
-          {#if correct}
-            <span class="text-green-400">✓</span>
-          {:else}
-            <span class="text-red-400">✗</span>
-          {/if}
-        </p>
-      {/each}
+      <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
+        {#each attempts as {guess, correct}}
+          <li class="text-sm text-zinc-200 pt-2">
+            {guess}
+            {#if correct}
+              <span class="text-green-400">✓</span>
+            {:else}
+              <span class="text-red-400">✗</span>
+            {/if}
+          </li>
+        {/each}
+      </ul>
     </Accordion>
     <Accordion disabled={!gameDone}>
       <div slot="summary" class="flex items-center">
