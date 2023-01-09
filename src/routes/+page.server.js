@@ -80,8 +80,7 @@ const parseSynResponse = (res) => {
   const synonyms = sense.syn_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const related = sense.rel_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
   const similar = sense.sim_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const near = sense.near_list?.map((list) => list.map((s) => s.wd)).flat() ?? [];
-  const words = [...synonyms, ...related, ...similar, ...near, word]
+  const words = [...synonyms, ...related, ...similar, word]
     .filter((w) =>
       /^\w+$/.test(w)
       && !definition.includes(w)
