@@ -5,7 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const tz = 'America/New_York';
+const tz = 'America/Los_Angeles';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ fetch }) {
@@ -13,9 +13,9 @@ export async function load({ fetch }) {
   const result = await cacheRes.json();
   const cache = result && JSON.parse(result);
   const dayjsLocal = dayjs();
-  const dayjsNY = dayjsLocal.tz(tz);
+  const dayjsLA = dayjsLocal.tz(tz);
 
-  if (cache && !dayjsNY.isAfter(dayjs(cache.createdAt), 'day')) {
+  if (cache && !dayjsLA.isAfter(dayjs(cache.createdAt), 'day')) {
     return {
       status: 200,
       body: { selectedWord: cache.selectedWord }
@@ -31,7 +31,7 @@ export async function load({ fetch }) {
     method: 'POST',
     body: JSON.stringify({
       selectedWord: randomWord,
-      createdAt: dayjsNY.toISOString(),
+      createdAt: dayjsLA.toISOString(),
     }),
   });
 
