@@ -1,12 +1,11 @@
 <script>
-  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
+  import { captureException, captureMessage } from '@sentry/browser';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
   import { addToast } from '$lib/stores/toast.js';
-  import { captureException, captureMessage } from '@sentry/browser';
 
   export let data;
 
@@ -17,16 +16,17 @@
   let correctAnimation = false;
 
   $: selectedWord = data?.body?.selectedWord;
-  $: correctAnswers = attempts.filter(({ correct }) => correct);
+  $: correctAnswers = attempts.filter(({ correct }) => correct).map(({ guess }) => guess);
   $: health = totalHealth - attempts.filter(({ correct }) => !correct).length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
 
   onMount(() => {
-    const id = window.localStorage.getItem('id') || '';
-    const localAttempts = window.localStorage.getItem('attempts') || '';
+    const storageId = window.localStorage.getItem('id') || '';
+    const storageAttempts = window.localStorage.getItem('attempts') || '';
 
-    if (selectedWord.id !== id) {
+    // refresh the game state if the word has changed
+    if (selectedWord.id !== storageId) {
       window.localStorage.removeItem('attempts');
       window.localStorage.removeItem('id');
 
@@ -35,56 +35,68 @@
       window.localStorage.setItem('id', selectedWord.id);
     }
 
-    if (localAttempts) {
+    if (storageAttempts) {
       attempts = JSON.parse(window.localStorage.getItem('attempts'));
     }
   })
 
+  /**
+   * removes all non-alphanumeric characters and whitespace and converts to lowercase
+  */
   const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
+
+  /**
+   * confirms the guess is valid. ignores empty strings and duplicates and provides
+   * feedback to the user
+  */
+  const validateGuess = (str) => {
+    if (!str) {
+      addToast('Please enter a guess.');
+      return false;
+    }
+
+    if (attempts.some(({ guess }) => guess === str)) {
+      addToast(`You already guessed "${guess}".`);
+      return false;
+    }
+
+    return true;
+  };
 
   const submitGuess = () => {
     const formattedGuess = formatString(guess);
 
-    if (!guess) {
-      addToast('Please enter a guess.');
-      return;
-    }
-
-    if (attempts.some(({ guess }) => guess === formattedGuess)) {
-      addToast(`You already guessed "${guess}".`);
+    if (!validateGuess(formattedGuess)) {
       guess = '';
       return;
     }
     
-    const correct = selectedWord.words.find((w) => w === formattedGuess);
+    const correctWord = selectedWord.words.find((w) => w === formattedGuess);
     const newGuess = {
       guess: formattedGuess,
-      correct
+      correct: !!correctWord
     };
 
-    if (correct) {
+    attempts = [...attempts, newGuess];
+    window.localStorage.setItem('attempts', JSON.stringify(attempts));
+    guess = '';
+
+    if (correctWord) {
       correctAnimation = true;
       setTimeout(() => {
         correctAnimation = false;
       }, 700);
     }
-
-    attempts = [...attempts, newGuess];
-    addToStorage();
-    guess = '';
   }
 
-  const addToStorage = () => {
-    window.localStorage.setItem('attempts', JSON.stringify(attempts));
-
-    if (gameDone) {
-      window.localStorage.setItem('id', selectedWord.id);
-    }
-  }
-
+  /**
+   * copies the results to the clipboard. Also sends a message to Sentry in order
+   * to track how many users' browsers support this feature
+  */
   const shareResults = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(`I got ${correctAnswers.length} out of ${selectedWord.words.length} words today on What's the Word! https://word.heykc.co`)
+      const text = `${correctAnswers.length}/${selectedWord.words.length}. ${selectedWord.wordType} - ${selectedWord.definition}. word.heykc.co`
+      navigator.clipboard.writeText(text)
         .then(() => {
           addToast('Results copied to clipboard!');
         })
@@ -109,23 +121,8 @@
 </svelte:head>
 
 <main class="grid grid-cols-3 mt-10 w-full max-w-[700px] relative">
-  <!-- Result Message -->
-  {#if gameDone}
-    <p class="col-start-2 columns-1 text-center text-3xl">
-      {#if gameSuccess}
-        Congratulations!
-      {:else}
-        Better luck next time.
-      {/if}
-    </p>
-
-    <div class="col-start-2 columns-1 flex justify-center mt-5 mb-10">
-      <p class="relative text-center text-6xl min-w-[3.5rem]">
-        <span>{correctAnswers.length}</span>
-        <span class="text-sm text-bold absolute bottom-2 -right-full"> / {selectedWord.words.length} words</span>
-      </p>
-    </div>
-  {:else}
+  {#if !gameDone}
+    <!-- Game -->
     <div class="col-start-2 columns-1 flex justify-between items-center w-full mb-14">
       <Health {health} {totalHealth} />
       <p class="flex justify-end text-lg">
@@ -136,18 +133,33 @@
     </div>
 
     <TextInput bind:text={guess} {submitGuess} />
+  {:else}
+    {@const score = `You guessed <span class="font-bold text-2xl">${correctAnswers.length}</span> out of ${selectedWord.words.length} words.`}
+
+    <!-- Results -->
+    <p class="col-start-2 columns-1 text-center text-xl">
+      {#if gameSuccess}
+        Congratulations! {@html score}
+      {:else}
+        {@html score} Better luck next time.
+      {/if}
+    </p>
   {/if}
 
   <!-- Definition -->
   <p class="col-start-2 columns-1 p-2 mt-5">
-    <span><em>{selectedWord.wordType}</em>. {selectedWord.definition}.</span>
+    <span>
+      <em>{selectedWord.wordType}</em>. {selectedWord.definition}.
+    </span>
     {#if selectedWord.example}
-      <span><i>Example:</i> {selectedWord.example}</span>
+      <span>
+        <i>Example:</i> {selectedWord.example}
+      </span>
     {/if}
   </p>
 
-  <!-- Info Accordion -->
   <div class="mt-10 mb-20 col-span-full">
+    <!-- Game Rules -->
     <Accordion summary="Rules">
       <div>
         <p class="text-sm text-zinc-300">
@@ -165,6 +177,8 @@
         </p>
       </div>
     </Accordion>
+
+    <!-- Attempts Made -->
     <Accordion disabled={!attempts.length}>
       <div slot="summary" class="flex items-center">
         <span>Attempts</span>
@@ -176,22 +190,24 @@
           {attempts.length}
         </span>
       </div>
+
       <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
         {#each attempts as {guess, correct}}
+          {@const color = correct ? 'text-green-400' : 'text-red-400'}
+          {@const icon = correct ? '✓' : '✗'}
+
           <li class="text-sm text-zinc-200 pt-2">
-            {guess}
-            {#if correct}
-              <span class="text-green-400">✓</span>
-            {:else}
-              <span class="text-red-400">✗</span>
-            {/if}
+            <span>{guess}</span>
+            <span class={color}>{icon}</span>
           </li>
         {/each}
       </ul>
     </Accordion>
+
+    <!-- Possible Answers -->
     <Accordion disabled={!gameDone}>
       <div slot="summary" class="flex items-center">
-        Possible Answers
+        <span>Possible Answers</span>
         <span class="
            w-fit h-4 px-1 rounded-full flex items-center justify-center
           {!gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
@@ -200,19 +216,20 @@
           {selectedWord.words.length}
         </span>
       </div>
-      {#if gameDone}
-        {@const attemptedWords = attempts.map(({ guess }) => guess)}
-        <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
-          {#each selectedWord.words as word}
-            <li class="flex justify-between { attemptedWords.includes(word) ? 'font-bold text-green-300' : '' }">
-              {word}
-            </li>
-          {/each}
-        </ul>
-      {/if}
+
+      <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
+        {#each selectedWord.words as word}
+          {@const correctWordStyles = correctAnswers.includes(word) ? 'font-bold text-green-300' : ''}
+
+          <li class="flex justify-between {correctWordStyles}">
+            {word}
+          </li>
+        {/each}
+      </ul>
     </Accordion>
   </div>
 
+  <!-- Share Button -->
   {#if gameDone}
     <div class="fixed bottom-2 right-2 w-14 h-14">
       <button
