@@ -5,6 +5,7 @@
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
+  import Attempt from '$lib/Attempt.svelte';
   import { addToast } from '$lib/stores/toast.js';
 
   export let data;
@@ -192,14 +193,8 @@
       </div>
 
       <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
-        {#each attempts as {guess, correct}}
-          {@const color = correct ? 'text-green-400' : 'text-red-400'}
-          {@const icon = correct ? '✓' : '✗'}
-
-          <li class="text-sm text-zinc-200 pt-2">
-            <span>{guess}</span>
-            <span class={color}>{icon}</span>
-          </li>
+        {#each attempts as attempt}
+          <Attempt {attempt} />
         {/each}
       </ul>
     </Accordion>
