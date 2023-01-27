@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { captureException, captureMessage } from '@sentry/browser';
+  import stringSimilarity from 'string-similarity';
   import TextInput from '$lib/TextInput.svelte';
   import Icon from '$lib/Icon.svelte';
   import Accordion from '$lib/Accordion.svelte';
@@ -17,8 +18,8 @@
   let correctAnimation = false;
 
   $: selectedWord = data?.body?.selectedWord;
-  $: correctAnswers = attempts.filter(({ correct }) => correct).map(({ guess }) => guess);
-  $: health = totalHealth - attempts.filter(({ correct }) => !correct).length;
+  $: correctAnswers = attempts.filter(({ status }) => status === 'correct').map(({ guess }) => guess);
+  $: health = totalHealth - attempts.filter(({ status }) => status === 'incorrect').length;
   $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
   $: gameSuccess = correctAnswers.length;
 
@@ -71,18 +72,27 @@
       guess = '';
       return;
     }
-    
-    const correctWord = selectedWord.words.find((w) => w === formattedGuess);
+
+    const remainingWords = selectedWord.words.filter((word) => !correctAnswers.includes(word));
+    const match = stringSimilarity.findBestMatch(formattedGuess, remainingWords);
+
+    let status = 'incorrect';
+    if (match.bestMatch.rating > 0.7) {
+      if (match.bestMatch.rating === 1) status = 'correct';
+      else status = 'near';
+      addToast(`"${formattedGuess}" is pretty close! Check your spelling or try a word spelled similarly.`);
+    }
+
     const newGuess = {
+      status,
       guess: formattedGuess,
-      correct: !!correctWord
     };
 
     attempts = [...attempts, newGuess];
     window.localStorage.setItem('attempts', JSON.stringify(attempts));
     guess = '';
 
-    if (correctWord) {
+    if (status === 'correct') {
       correctAnimation = true;
       setTimeout(() => {
         correctAnimation = false;
