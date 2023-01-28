@@ -124,8 +124,17 @@
         .catch((error) => {
           if (error.name === 'NotAllowedError') {
             addToast(
-              'Please allow clipboard access in your browser settings, or try again in a different browser.',
-              { type: 'warning' },
+              '',
+              {
+                delay: -1,
+                slot: `
+                  <p>
+                    This browser doesn't support text copy, try again in a different browser, or you
+                    can copy your results below:
+                  </p>
+                  <pre class="mt-2 bg-slate-800 p-4 rounded-sm" style="user-select: all;">${text}</pre>
+                `
+              },
             );
             captureMessage('Clipboard access not allowed.');
             return;
