@@ -20,4 +20,6 @@ export const match = (matcher, cases) => {
       return value;
     }
   }
+
+  throw new Error(`No match found for ${matcher}. Please ensure your cases are exhaustive.`);
 }
