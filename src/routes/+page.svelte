@@ -119,7 +119,7 @@
       const text = `${results} word.heykc.co`
       navigator.clipboard.writeText(text)
         .then(() => {
-          addToast('Results copied to clipboard!', { type: 'success' });
+          addToast('Your results were copied to your clipboard!', { type: 'success' });
         })
         .catch((error) => {
           if (error.name === 'NotAllowedError') {
@@ -128,10 +128,7 @@
               {
                 delay: -1,
                 slot: `
-                  <p>
-                    This browser doesn't support text copy, try again in a different browser, or you
-                    can copy your results below:
-                  </p>
+                  <p>Something went wrong. Try again in a different browser, or select and copy your results below:</p>
                   <pre class="mt-2 bg-slate-800 p-4 rounded-sm" style="user-select: all;">${text}</pre>
                 `
               },
@@ -140,15 +137,27 @@
             return;
           }
           addToast(
-            'There was an error when attempting to copy results to clipboard. Please try again.',
-            { type: 'error' },
-          );
+              '',
+              {
+                delay: -1,
+                slot: `
+                  <p>Something went wrong. Try again in a different browser, or select and copy your results below:</p>
+                  <pre class="mt-2 bg-slate-800 p-4 rounded-sm" style="user-select: all;">${text}</pre>
+                `
+              },
+            );
           captureException(error);
         });
     } else {
       addToast(
-        'Copying to clipboard is not supported in this browser. Please try again in a different browser.',
-        { type: 'warning' },
+        '',
+        {
+          delay: -1,
+          slot: `
+            <p>Something went wrong. Try again in a different browser, or select and copy your results below:</p>
+            <pre class="mt-2 bg-slate-800 p-4 rounded-sm" style="user-select: all;">${text}</pre>
+          `
+        },
       );
       captureMessage('Copying to clipboard is not supported in this browser.');
     }
