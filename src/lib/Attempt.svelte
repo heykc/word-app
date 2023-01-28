@@ -9,7 +9,7 @@
 
   $: {
     if (status === 'correct') {
-      color = 'text-green-400';
+      color = 'text-emerald-400';
       icon = 'fa-solid fa-check';
     } else if (status === 'near') {
       color = 'text-yellow-400';

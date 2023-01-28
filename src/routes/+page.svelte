@@ -195,7 +195,7 @@
           Open the Attempts drawer to see your previous guesses for the day.
         </p>
           <ul class="text-sm text-zinc-300 mt-3">
-            <li><Icon name="fa-solid fa-check" classNames="text-green-400" /> means you guessed correctly.</li>
+            <li><Icon name="fa-solid fa-check" classNames="text-emerald-400" /> means you guessed correctly.</li>
             <li><Icon name="fa-solid fa-xmark" classNames="text-red-400" /> means you guessed incorrectly.</li>
             <li>
               <Icon name="fa-solid fa-asterisk" classNames="text-amber-400" /> means you guessed a word that is
@@ -248,7 +248,7 @@
 
       <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
         {#each selectedWord.words as word}
-          {@const correctWordStyles = correctAnswers.includes(word) ? 'font-bold text-green-300' : ''}
+          {@const correctWordStyles = correctAnswers.includes(word) ? 'font-bold text-emerald-300' : ''}
 
           <li class="flex justify-between {correctWordStyles}">
             {word}
@@ -292,7 +292,7 @@
   }
 
   .correct {
-    @apply text-green-400;
+    @apply text-emerald-400;
     transform: scale(1.2);
   }
 </style>
