@@ -39,5 +39,7 @@
   >
     <Icon name="fa-solid fa-xmark" />
   </button>
-  <p>{ message }</p>
+  <slot>
+    <p>{ message }</p>
+  </slot>
 </div>

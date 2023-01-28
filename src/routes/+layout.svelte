@@ -34,7 +34,11 @@
 <slot />
 
 <div class="flex flex-col items-start fixed top-2 right-2 w-10/12 gap-3">
-  {#each $toasts as toast}
-    <Toast {...toast} />
+  {#each $toasts as {slot, ...toast}}
+    <Toast {...toast}>
+      {#if slot}
+        {@html slot}
+      {/if}
+    </Toast>
   {/each}
 </div>
