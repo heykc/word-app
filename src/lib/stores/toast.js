@@ -8,7 +8,7 @@ export const removeToast = (id) => {
   toasts.update((toasts) => toasts.filter((toast) => toast.id !== id));
 };
 
-export const addToast = (message) => {
+export const addToast = (message, { type, delay } = {}) => {
   const id = createId();
-  toasts.update((toasts) => [...toasts, { id, message }]);
+  toasts.update((toasts) => [...toasts, { id, message, type, delay }]);
 };

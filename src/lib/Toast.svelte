@@ -5,13 +5,18 @@
   import Icon from '$lib/Icon.svelte';
 
   export let message = '';
+  export let type = 'info';
+  export let delay = 2000;
   export let id;
 
   onMount(() => {
     let thisId = id;
+
+    if (delay < 0) return;
+    
     setTimeout(() => {
       removeToast(thisId);
-    }, 2000);
+    }, delay);
   });
 </script>
 

@@ -53,7 +53,7 @@
   */
   const validateGuess = (str) => {
     if (!str) {
-      addToast('Please enter a guess.');
+      addToast('Please enter a guess.', { type: 'warning' });
       return false;
     }
 
@@ -79,8 +79,12 @@
     let status = 'incorrect';
     if (match.bestMatch.rating > 0.7) {
       if (match.bestMatch.rating === 1) status = 'correct';
-      else status = 'near';
-      addToast(`"${formattedGuess}" is pretty close! Check your spelling or try a word spelled similarly.`);
+      else {
+        status = 'near';
+
+        const text = `"${formattedGuess}" is close! Check your spelling or try a word spelled similarly.`;
+        addToast(text, { delay: 5000 });
+      }
     }
 
     const newGuess = {
@@ -109,19 +113,28 @@
       const text = `${correctAnswers.length}/${selectedWord.words.length}. ${selectedWord.wordType} - ${selectedWord.definition}. word.heykc.co`
       navigator.clipboard.writeText(text)
         .then(() => {
-          addToast('Results copied to clipboard!');
+          addToast('Results copied to clipboard!', { type: 'success' });
         })
         .catch((error) => {
           if (error.name === 'NotAllowedError') {
-            addToast('Please allow clipboard access in your browser settings, or try again in a different browser.');
+            addToast(
+              'Please allow clipboard access in your browser settings, or try again in a different browser.',
+              { type: 'warning' },
+            );
             captureMessage('Clipboard access not allowed.');
             return;
           }
-          addToast('There was an error when attempting to copy results to clipboard. Please try again.');
+          addToast(
+            'There was an error when attempting to copy results to clipboard. Please try again.',
+            { type: 'error' },
+          );
           captureException(error);
         });
     } else {
-      addToast('Copying to clipboard is not supported in this browser. Please try again in a different browser.');
+      addToast(
+        'Copying to clipboard is not supported in this browser. Please try again in a different browser.',
+        { type: 'warning' },
+      );
       captureMessage('Copying to clipboard is not supported in this browser.');
     }
   };
