@@ -7,7 +7,7 @@ module.exports = {
   plugins: [],
   safelist: [
     'bg-emerald-700',
-    'bg-yellow-700',
+    'bg-amber-700',
     'bg-red-700',
     'bg-cyan-700',
   ]
