@@ -78,7 +78,7 @@
     const match = stringSimilarity.findBestMatch(formattedGuess, remainingWords);
 
     let status = 'incorrect';
-    if (match.bestMatch.rating > 0.7) {
+    if (match.bestMatch.rating > 0.6) {
       if (match.bestMatch.rating === 1) status = 'correct';
       else {
         status = 'near';
