@@ -8,6 +8,7 @@
   import Health from '$lib/Health.svelte';
   import Attempt from '$lib/Attempt.svelte';
   import { addToast } from '$lib/stores/toast.js';
+  import { match } from '$lib/utils.js';
 
   export let data;
 
@@ -110,7 +111,12 @@
   */
   const shareResults = () => {
     if (navigator.clipboard) {
-      const text = `${correctAnswers.length}/${selectedWord.words.length}. ${selectedWord.wordType} - ${selectedWord.definition}. word.heykc.co`
+      const results = attempts.map(({ status }) => match(status, [
+        ['correct', '✅'],
+        ['near', '✴️'],
+        ['incorrect', '❌'],
+      ])).join('');
+      const text = `${results} word.heykc.co`
       navigator.clipboard.writeText(text)
         .then(() => {
           addToast('Results copied to clipboard!', { type: 'success' });
@@ -161,13 +167,24 @@
     {@const score = `You guessed <span class="font-bold text-2xl">${correctAnswers.length}</span> out of ${selectedWord.words.length} words.`}
 
     <!-- Results -->
-    <p class="col-start-2 columns-1 text-center text-xl">
-      {#if gameSuccess}
-        Congratulations! {@html score}
-      {:else}
-        {@html score} Better luck next time.
-      {/if}
-    </p>
+    <div class="col-start-2 columns-1 flex flex-col w-full items-center">
+      <p class="text-center text-xl">
+        {#if gameSuccess}
+          Congratulations! {@html score}
+        {:else}
+          {@html score} Better luck next time.
+        {/if}
+      </p>
+
+      <!-- Share Button -->
+      <button
+        class="p-3 text-base bg-zinc-200 text-slate-900 rounded-md mt-5"
+        on:click={shareResults}
+      >
+        <span>Share results
+        <Icon name="fa-solid fa-share" classNames="ml-2" />
+      </button>
+    </div>
   {/if}
 
   <!-- Definition -->
@@ -257,18 +274,6 @@
       </ul>
     </Accordion>
   </div>
-
-  <!-- Share Button -->
-  {#if gameDone}
-    <div class="fixed bottom-2 right-2 w-14 h-14">
-      <button
-        class="w-14 h-14 text-lg bg-zinc-200 text-slate-900 rounded-full"
-        on:click={shareResults}
-      >
-        <Icon name="fa-solid fa-share" />
-      </button>
-    </div>
-  {/if}
 </main>
 
 <style>
