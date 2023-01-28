@@ -179,8 +179,19 @@
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
-          Examples may not match the required word form (present tense, past tense, etc). Pay close
-          attention to any form specifications before the definition.
+          Open the Attempts drawer to see your previous guesses for the day.
+        </p>
+          <ul class="text-sm text-zinc-300 mt-3">
+            <li><Icon name="fa-solid fa-check" classNames="text-green-400" /> means you guessed correctly.</li>
+            <li><Icon name="fa-solid fa-xmark" classNames="text-red-400" /> means you guessed incorrectly.</li>
+            <li>
+              <Icon name="fa-solid fa-asterisk" classNames="text-amber-400" /> means you guessed a word that is
+              similar to a correct answer, but you may have misspelled it or used the wrong tense or plural form.
+            </li>
+          </ul>
+
+        <p class="text-sm text-zinc-300 mt-3">
+          Examples may not always match the required tense or plural form listed before the definition.
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
