@@ -10,10 +10,7 @@
   
   let details;
 
-  const closeOthers = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    
+  const closeOthers = () => {
     if (disabled) return;
 
     details.open = !details.open;
@@ -25,17 +22,17 @@
 <details
   bind:this={details}
   class="border-t-2 border-zinc-300 p-3 accordion-details {disabled ? 'text-zinc-500' : ''}"
-  on:click={closeOthers}
+  on:click|preventDefault|stopPropagation
 >
-  <summary class="flex items-center justify-between">
+  <summary class="flex items-center justify-between" on:click={closeOthers}>
     <slot name="summary">
       {summary}
     </slot>
     {#if !disabled}
-      <NpIcon name="chevron" />
+      <NpIcon name="chevron" classNames="chevron"/>
     {/if}
   </summary>
-  <div class="p-3">
+  <div class="p-3 accordion__content">
     <slot />
   </div>
 </details>
@@ -47,11 +44,11 @@
     font-size: 0;
   }
 
-  :global(details .np-icon) {
+  :global(details .chevron) {
     transition: transform 0.2s ease-in-out;
   }
 
-  :global(details[open] .np-icon) {
-    transform: rotate(180deg);
+  :global(details[open] .chevron) {
+    transform: rotate(3.142rad);
   }
 </style>
