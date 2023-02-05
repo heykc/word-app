@@ -12,7 +12,7 @@
       color = 'text-emerald-400';
       icon = 'okay';
     } else if (status === 'near') {
-      color = 'text-yellow-400';
+      color = 'text-amber-400';
       icon = 'asterisk';
     }
   }
