@@ -11,7 +11,7 @@
   export let id;
 
   $: bgColor = match(type, [
-    ['success', 'bg-green-700'],
+    ['success', 'bg-emerald-700'],
     ['warning', 'bg-amber-700'],
     ['error', 'bg-red-700'],
     ['_', 'bg-cyan-700'],
