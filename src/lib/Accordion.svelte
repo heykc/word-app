@@ -3,7 +3,7 @@
 </script>
 
 <script>
-  import Icon from '$lib/Icon.svelte';
+  import NpIcon from '$lib/NpIcon.svelte';
 
   export let summary = '';
   export let disabled = false;
@@ -32,7 +32,7 @@
       {summary}
     </slot>
     {#if !disabled}
-      <Icon name="fa-solid fa-chevron-down" classNames="arrow"/>
+      <NpIcon name="chevron" classNames="arrow"/>
     {/if}
   </summary>
   <div class="p-3">

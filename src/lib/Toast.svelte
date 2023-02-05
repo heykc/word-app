@@ -2,7 +2,7 @@
   import { fade, fly } from 'svelte/transition';
   import { toasts, removeToast } from '$lib/stores/toast.js';
   import { onMount } from 'svelte';
-  import Icon from '$lib/Icon.svelte';
+  import NpIcon from '$lib/NpIcon.svelte';
   import { match } from '$lib/utils.js';
 
   export let message = '';
@@ -37,7 +37,7 @@
     class="absolute top-0 right-0 w-6 h-6 rounded-full "
     on:click={() => removeToast(id)}
   >
-    <Icon name="fa-solid fa-xmark" />
+    <NpIcon name="wrong" />
   </button>
   <slot>
     <p>{ message }</p>
