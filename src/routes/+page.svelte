@@ -3,7 +3,7 @@
   import { captureException, captureMessage } from '@sentry/browser';
   import stringSimilarity from 'string-similarity';
   import TextInput from '$lib/TextInput.svelte';
-  import Icon from '$lib/Icon.svelte';
+  import NpIcon from '$lib/NpIcon.svelte';
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
   import Attempt from '$lib/Attempt.svelte';
@@ -199,8 +199,8 @@
         class="p-3 text-base bg-zinc-200 text-slate-900 rounded-md mt-5"
         on:click={shareResults}
       >
-        <span>Share results
-        <Icon name="fa-solid fa-share" classNames="ml-2" />
+        <span>Share results</span>
+        <NpIcon name="forward" classNames="ml-2 text-lg" />
       </button>
     </div>
   {/if}
@@ -230,10 +230,10 @@
           Open the Attempts drawer to see your previous guesses for the day.
         </p>
           <ul class="text-sm text-zinc-300 mt-3">
-            <li><Icon name="fa-solid fa-check" classNames="text-emerald-400" /> means you guessed correctly.</li>
-            <li><Icon name="fa-solid fa-xmark" classNames="text-red-400" /> means you guessed incorrectly.</li>
+            <li><NpIcon name="okay" classNames="text-emerald-400" /> means you guessed correctly.</li>
+            <li><NpIcon name="wrong" classNames="text-red-400" /> means you guessed incorrectly.</li>
             <li>
-              <Icon name="fa-solid fa-asterisk" classNames="text-amber-400" /> means you guessed a word that is
+              <NpIcon name="asterisk" classNames="text-amber-400" /> means you guessed a word that is
               similar to a correct answer, but you may have misspelled it or used the wrong tense or plural form.
             </li>
           </ul>
