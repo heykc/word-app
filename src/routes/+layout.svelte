@@ -3,7 +3,6 @@
   import { BrowserTracing } from "@sentry/tracing";
   import { inject } from '@vercel/analytics';
   import '../app.css';
-  import Icon from '$lib/Icon.svelte';
   import Toast from '$lib/Toast.svelte';
   import { toasts } from '$lib/stores/toast.js';
 
