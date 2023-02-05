@@ -2,7 +2,7 @@
   import { fade, fly } from 'svelte/transition';
   import { toasts, removeToast } from '$lib/stores/toast.js';
   import { onMount } from 'svelte';
-  import NpIcon from '$lib/NpIcon.svelte';
+  import NpIcon from '$lib/NounProject/NpIcon.svelte';
   import { match } from '$lib/utils.js';
 
   export let message = '';

@@ -3,7 +3,7 @@
   import { captureException, captureMessage } from '@sentry/browser';
   import stringSimilarity from 'string-similarity';
   import TextInput from '$lib/TextInput.svelte';
-  import NpIcon from '$lib/NpIcon.svelte';
+  import NpIcon from '$lib/NounProject/NpIcon.svelte';
   import Accordion from '$lib/Accordion.svelte';
   import Health from '$lib/Health.svelte';
   import Attempt from '$lib/Attempt.svelte';

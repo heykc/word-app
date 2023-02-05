@@ -3,7 +3,7 @@
 </script>
 
 <script>
-  import NpIcon from '$lib/NpIcon.svelte';
+  import NpIcon from '$lib/NounProject/NpIcon.svelte';
 
   export let summary = '';
   export let disabled = false;
@@ -32,7 +32,7 @@
       {summary}
     </slot>
     {#if !disabled}
-      <NpIcon name="chevron" classNames="arrow"/>
+      <NpIcon name="chevron" />
     {/if}
   </summary>
   <div class="p-3">
@@ -47,11 +47,11 @@
     font-size: 0;
   }
 
-  :global(details .arrow) {
+  :global(details .np-icon) {
     transition: transform 0.2s ease-in-out;
   }
 
-  :global(details[open] .arrow) {
+  :global(details[open] .np-icon) {
     transform: rotate(180deg);
   }
 </style>

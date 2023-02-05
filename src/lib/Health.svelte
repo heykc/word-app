@@ -1,6 +1,6 @@
 <script>
   import { fly } from 'svelte/transition';
-  import NpIcon from '$lib/NpIcon.svelte';
+  import NpIcon from '$lib/NounProject/NpIcon.svelte';
 
   export let health;
   export let totalHealth

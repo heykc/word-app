@@ -1,5 +1,5 @@
 <script>
-  import NpIcon from '$lib/NpIcon.svelte';
+  import NpIcon from '$lib/NounProject/NpIcon.svelte';
   export let attempt;
 
   const { status, guess } = attempt;
