@@ -227,14 +227,15 @@
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
-          Open the Attempts drawer to see your previous guesses for the day.
+          Open the Attempts drawer to see your previous guesses for the day. Each of your attempts will be marked width
+          one of the following icons:
         </p>
           <ul class="text-sm text-zinc-300 mt-3">
-            <li><NpIcon name="okay" classNames="text-emerald-400" /> means you guessed correctly.</li>
-            <li><NpIcon name="wrong" classNames="text-red-400" /> means you guessed incorrectly.</li>
+            <li><NpIcon name="okay" classNames="text-emerald-400" /> means your guess matches a possible answers!</li>
+            <li><NpIcon name="wrong" classNames="text-red-400" /> means your guess didn't match a possible answer.</li>
             <li>
-              <NpIcon name="asterisk" classNames="text-amber-400" /> means you guessed a word that is
-              similar to a correct answer, but you may have misspelled it or used the wrong tense or plural form.
+              <NpIcon name="asterisk" classNames="text-amber-400" /> means your guess is similar to a possible answer
+              that hasn't been guessed yet, but you may have misspelled it or used the wrong tense or plural form.
             </li>
           </ul>
 
