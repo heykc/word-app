@@ -227,7 +227,7 @@
         </p>
 
         <p class="text-sm text-zinc-300 mt-3">
-          Open the Attempts drawer to see your previous guesses for the day. Each of your attempts will be marked width
+          Open the Attempts drawer to see your previous guesses for the day. Each of your attempts will be marked with
           one of the following icons:
         </p>
           <ul class="text-sm text-zinc-300 mt-3">
