@@ -113,10 +113,10 @@
     if (navigator.clipboard) {
       const results = attempts.map(({ status }) => match(status, [
         ['correct', '✅'],
-        ['near', '✴️'],
+        ['near', '✳️'],
         ['incorrect', '❌'],
       ])).join('');
-      const text = `${results} https://word.indoorkeith.com`
+      const text = `${results} ${correctAnswers.length}/${selectedWord.words.length} https://word.indoorkeith.com`
       navigator.clipboard.writeText(text)
         .then(() => {
           addToast('Your results were copied to your clipboard!', { type: 'success' });
