@@ -116,7 +116,7 @@
         ['near', '✴️'],
         ['incorrect', '❌'],
       ])).join('');
-      const text = `${results} word.heykc.co`
+      const text = `${results} https://word.indoorkeith.com`
       navigator.clipboard.writeText(text)
         .then(() => {
           addToast('Your results were copied to your clipboard!', { type: 'success' });

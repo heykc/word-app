@@ -4,4 +4,4 @@ Small project I made for fun to mess around with SvelteKit, TailwindCSS, and Red
 
 Every day, the game will refresh and post a random definition. The goal is to guess any number of words that matches the definition.
 
-Check out the live site here: https://word.heykc.co
+Check out the live site here: https://word.indoorkeith.com
