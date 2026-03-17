@@ -29,8 +29,8 @@
 </script>
 
 <div
-  in:fly={{ y: -100, duration: 400 }}
-  out:fade={{ duration: 200 }}
+  in:fly|global={{ y: -100, duration: 400 }}
+  out:fade|global={{ duration: 200 }}
   class="toast rounded-md p-3 text-zinc-50 {bgColor} border-zinc-50 border-2 w-full relative"
 >
   <button

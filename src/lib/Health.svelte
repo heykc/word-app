@@ -12,7 +12,7 @@
   {#each healthArr as i}
       <span class="relative min-w-[24px]">
         {#if i < health}
-          <span out:fly={{ y: -20, duration: 400 }} class="block relative z-10">
+          <span out:fly|global={{ y: -20, duration: 400 }} class="block relative z-10">
             <NpIcon name="heart" classNames="text-red-400" />
           </span>
         {:else}
