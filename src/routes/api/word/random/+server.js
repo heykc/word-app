@@ -20,5 +20,5 @@ export async function GET({ params: { searchWord = '' } }) {
     return new Response(word);
   }
 
-  throw error(500, 'Failed to fetch random word');
+  error(500, 'Failed to fetch random word');
 }
