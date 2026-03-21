@@ -35,6 +35,7 @@
 		"dayjs": "^1.11.7",
 		"eslint-plugin-svelte": "^3.16.0",
 		"html2canvas": "^1.4.1",
-		"string-similarity": "^4.0.4"
+		"string-similarity": "^4.0.4",
+		"subtlex-word-frequencies": "^2.0.0"
 	}
 }
