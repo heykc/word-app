@@ -2,17 +2,16 @@
   import { fly } from 'svelte/transition';
   import NpIcon from '$lib/NounProject/NpIcon.svelte';
 
-  export let health;
-  export let totalHealth
+  let { health, totalHealth } = $props();
 
-  $: healthArr = Array.from({ length: totalHealth }, (_, i) => i);
+  let healthArr = $derived(Array.from({ length: totalHealth }, (_, i) => i));
 </script>
 
 <div class="flex justify-start gap-2 text-xl">
   {#each healthArr as i}
       <span class="relative min-w-[24px]">
         {#if i < health}
-          <span out:fly={{ y: -20, duration: 400 }} class="block relative z-10">
+          <span out:fly|global={{ y: -20, duration: 400 }} class="block relative z-10">
             <NpIcon name="heart" classNames="text-red-400" />
           </span>
         {:else}

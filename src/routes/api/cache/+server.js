@@ -21,7 +21,7 @@ export async function GET({ fetch }) {
     return new Response({});
   }
 
-  throw error(500, 'Failed to get cache');
+  error(500, 'Failed to get cache');
 }
 
 /** @type {import('./$types').RequestHandler} */
@@ -38,5 +38,5 @@ export async function POST({ fetch, request }) {
     return new Response(res.json());
   }
 
-  throw error(500, 'Failed to set cache');
+  error(500, 'Failed to set cache');
 }

@@ -1,6 +1,12 @@
 <script>
-  export let name;
-  export let classNames = '';
+  /**
+   * @typedef {Object} Props
+   * @property {any} name
+   * @property {string} [classNames]
+   */
+
+  /** @type {Props} */
+  let { name, classNames = '' } = $props();
 </script>
 
 {#await import(`./icons/${name}.svg?raw`) then Icon}

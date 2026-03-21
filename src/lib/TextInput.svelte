@@ -1,12 +1,20 @@
 <script>
-  export let text = '';
-  export let submitGuess = () => {};
+  import { preventDefault } from 'svelte/legacy';
+
+  /**
+   * @typedef {Object} Props
+   * @property {string} [text]
+   * @property {any} [submitGuess]
+   */
+
+  /** @type {Props} */
+  let { text = $bindable(''), submitGuess = () => {} } = $props();
 </script>
 
 <form
   class="w-100 grid place-items-center relative text-input"
   autocomplete="off"
-  on:submit|preventDefault={submitGuess}
+  onsubmit={preventDefault(submitGuess)}
 >
   <label for="guess-input" class="hidden">
     Guess the word:

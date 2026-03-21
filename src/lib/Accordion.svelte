@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: This migration would change the name of a slot (summary to summary_1) making the component unusable -->
 <script context="module">
   let opened;
 </script>
