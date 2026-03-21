@@ -2,10 +2,9 @@
   import { fly } from 'svelte/transition';
   import NpIcon from '$lib/NounProject/NpIcon.svelte';
 
-  export let health;
-  export let totalHealth
+  let { health, totalHealth } = $props();
 
-  $: healthArr = Array.from({ length: totalHealth }, (_, i) => i);
+  let healthArr = $derived(Array.from({ length: totalHealth }, (_, i) => i));
 </script>
 
 <div class="flex justify-start gap-2 text-xl">

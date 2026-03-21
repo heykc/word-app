@@ -5,6 +5,13 @@
   import '../app.css';
   import Toast from '$lib/Toast.svelte';
   import { toasts } from '$lib/stores/toast.js';
+  /**
+   * @typedef {Object} Props
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let { children } = $props();
 
   if (!import.meta.env.DEV) {
     inject();
@@ -30,7 +37,7 @@
   </nav>
 </header>
 
-<slot />
+{@render children?.()}
 
 <div class="flex flex-col items-start fixed top-2 right-2 w-10/12 gap-3">
   {#each $toasts as {slot, ...toast}}

@@ -5,17 +5,30 @@
   import NpIcon from '$lib/NounProject/NpIcon.svelte';
   import { match } from '$lib/utils.js';
 
-  export let message = '';
-  export let type = 'info';
-  export let delay = 2000;
-  export let id;
+  /**
+   * @typedef {Object} Props
+   * @property {string} [message]
+   * @property {string} [type]
+   * @property {number} [delay]
+   * @property {any} id
+   * @property {import('svelte').Snippet} [children]
+   */
 
-  $: bgColor = match(type, [
+  /** @type {Props} */
+  let {
+    message = '',
+    type = 'info',
+    delay = 2000,
+    id,
+    children
+  } = $props();
+
+  let bgColor = $derived(match(type, [
     ['success', 'bg-emerald-700'],
     ['warning', 'bg-amber-700'],
     ['error', 'bg-red-700'],
     ['_', 'bg-cyan-700'],
-  ]);
+  ]));
 
   onMount(() => {
     let thisId = id;
@@ -35,11 +48,11 @@
 >
   <button
     class="absolute top-0 right-0 w-6 h-6 rounded-full "
-    on:click={() => removeToast(id)}
+    onclick={() => removeToast(id)}
   >
     <NpIcon name="wrong" />
   </button>
-  <slot>
+  {#if children}{@render children()}{:else}
     <p>{ message }</p>
-  </slot>
+  {/if}
 </div>

@@ -1,13 +1,15 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import NpIcon from '$lib/NounProject/NpIcon.svelte';
-  export let attempt;
+  let { attempt } = $props();
 
   const { status, guess } = attempt;
 
-  let color = 'text-red-400';
-  let icon = 'wrong';
+  let color = $state('text-red-400');
+  let icon = $state('wrong');
 
-  $: {
+  run(() => {
     if (status === 'correct') {
       color = 'text-emerald-400';
       icon = 'okay';
@@ -15,7 +17,7 @@
       color = 'text-amber-400';
       icon = 'asterisk';
     }
-  }
+  });
 </script>
 
 <li class="text-sm text-zinc-200 pt-2">

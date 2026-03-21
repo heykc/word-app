@@ -10,19 +10,19 @@
   import { addToast } from '$lib/stores/toast.js';
   import { match } from '$lib/utils.js';
 
-  export let data;
+  let { data } = $props();
 
   const totalHealth = 5;
 
-  let attempts = [];
-  let guess = '';
-  let correctAnimation = false;
+  let attempts = $state([]);
+  let guess = $state('');
+  let correctAnimation = $state(false);
 
-  $: selectedWord = data?.body?.selectedWord;
-  $: correctAnswers = attempts.filter(({ status }) => status === 'correct').map(({ guess }) => guess);
-  $: health = totalHealth - attempts.filter(({ status }) => status === 'incorrect').length;
-  $: gameDone = correctAnswers.length === selectedWord.words.length || health === 0;
-  $: gameSuccess = correctAnswers.length;
+  let selectedWord = $derived(data?.body?.selectedWord);
+  let correctAnswers = $derived(attempts.filter(({ status }) => status === 'correct').map(({ guess }) => guess));
+  let health = $derived(totalHealth - attempts.filter(({ status }) => status === 'incorrect').length);
+  let gameDone = $derived(correctAnswers.length === selectedWord.words.length || health === 0);
+  let gameSuccess = $derived(correctAnswers.length);
 
   onMount(() => {
     const storageId = window.localStorage.getItem('id') || '';
@@ -197,7 +197,7 @@
       <!-- Share Button -->
       <button
         class="p-3 text-base bg-zinc-200 text-slate-900 rounded-md mt-5"
-        on:click={shareResults}
+        onclick={shareResults}
       >
         <span>Share results</span>
         <NpIcon name="forward" classNames="ml-2 text-lg" />
@@ -251,16 +251,18 @@
 
     <!-- Attempts Made -->
     <Accordion disabled={!attempts.length}>
-      <div slot="summary" class="flex items-center">
-        <span>Attempts</span>
-        <span class="
-          w-fit h-4 px-1 rounded-full flex items-center justify-center
-          {!attempts.length ? 'bg-zinc-400' : 'bg-zinc-100'}
-          text-slate-900 text-sm font-semibold ml-3
-        ">
-          {attempts.length}
-        </span>
-      </div>
+      {#snippet summary()}
+            <div  class="flex items-center">
+          <span>Attempts</span>
+          <span class="
+            w-fit h-4 px-1 rounded-full flex items-center justify-center
+            {!attempts.length ? 'bg-zinc-400' : 'bg-zinc-100'}
+            text-slate-900 text-sm font-semibold ml-3
+          ">
+            {attempts.length}
+          </span>
+        </div>
+          {/snippet}
 
       <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
         {#each attempts as attempt}
@@ -271,16 +273,18 @@
 
     <!-- Possible Answers -->
     <Accordion disabled={!gameDone}>
-      <div slot="summary" class="flex items-center">
-        <span>Possible Answers</span>
-        <span class="
-           w-fit h-4 px-1 rounded-full flex items-center justify-center
-          {!gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
-          text-slate-900 text-sm font-semibold ml-3
-        ">
-          {selectedWord.words.length}
-        </span>
-      </div>
+      {#snippet summary()}
+            <div  class="flex items-center">
+          <span>Possible Answers</span>
+          <span class="
+             w-fit h-4 px-1 rounded-full flex items-center justify-center
+            {!gameDone ? 'bg-zinc-400' : 'bg-zinc-100'}
+            text-slate-900 text-sm font-semibold ml-3
+          ">
+            {selectedWord.words.length}
+          </span>
+        </div>
+          {/snippet}
 
       <ul class="grid grid-flow-row grid-cols-2 gap-3 mt-4 content-start text-sm text-zinc-300">
         {#each selectedWord.words as word}
