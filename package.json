@@ -29,6 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sentry/sveltekit": "^10.45.0",
 		"@sentry/tracing": "^7.29.0",
 		"@vercel/analytics": "^0.1.6",
 		"dayjs": "^1.11.7",

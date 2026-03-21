@@ -3,9 +3,19 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	kit: {
-		adapter: adapter()
-	},
+  kit: {
+    adapter: adapter(),
+
+    experimental: {
+      tracing: {
+        server: true,
+      },
+
+      instrumentation: {
+        server: true,
+      },
+    },
+  },
   preprocess: vitePreprocess(),
 };
 
