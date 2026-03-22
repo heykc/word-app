@@ -43,18 +43,23 @@
   <dialog id="help" class="rounded-md p-10 bg-zinc-800 w-full md:w-2/3 text-sm text-zinc-200 backdrop-blur-md backdrop-opacity-40">
     <h2 class="text-lg font-semibold mb-2">How to Play</h2>
     <p class="mb-4">
-      Guess a word that fits the definition and example provided.
-      Less frequently used words will earn you more points!
+      Guess words that fit the definition provided.
+      Less common words will earn you more points!
     </p>
     <p class="mb-4">
       You have 5 guesses total. A misspelled word counts as a
       guess and will earn you 0 points. Words that are close to
-      a correct synonym will let you try again without penalty.
+      a possible word will let you try again without penalty.
     </p>
     <p class="mb-4">
       Verb tense is important and will be specified in the definition.
       For instance, if the definition says <i>verb third person present simple</i>,
       then you should guess a word like "runs" instead of "run".
+    </p>
+    <p>
+      The word frequency score is based on the <a href="https://www.ugent.be/pp/experimentele-psychologie/en/research/documents/subtlexus" target="_blank" class="font-bold hover:underline">SUBTLEXus corpus</a>, which 
+      is a collection of word frequencies derived from American English subtitles.
+      A score of 1 means the word is very common, while a score of 10 means the word is very rare.
     </p>
     <div class="flex justify-end">
       <button class="mt-5 p-2 bg-zinc-200 rounded text-zinc-700 font-bold" commandfor="help" command="close">
