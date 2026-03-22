@@ -212,19 +212,24 @@
 
   <!-- possible words in 1 column going downward with grid -->
   {#if answerCount >= 5}
-    <h2 class="text-center mt-8">Possible words:</h2>
-    <div class="flex flex-col gap-4 mt-4 text-center">
-      {#each synonyms.scoredWords as { word, score }}
-        <div class="flex items-center gap-2 justify-center">
+    <h2 class="text-center mt-8 text-2xl font-bold">Possible words:</h2>
+    <div class="flex flex-col gap-4 mt-4 text-center w-full sm:w-1/2 mx-auto">
+      {#each synonyms.scoredWords as { word, score }, index}
+        <!-- give every other div a .5 transparent background color -->
+        <div class="flex items-center p-2 justify-between" class:test={index % 2 !== 0}>
           <span>{word}</span>
-          {#if score > 0}
-            <span class="text-green-500">+{score}</span>
-          {/if}
+          <span class="text-green-500">+{score}</span>
         </div>
       {/each}
     </div>
   {/if}
 </main>
+
+<style>
+  .test {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+</style>
 
 
 
