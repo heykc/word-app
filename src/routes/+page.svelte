@@ -7,7 +7,8 @@
 
   let { data } = $props();
   let synonyms = $derived(data?.body?.synonyms);
-  let guesses = $state([]);
+  let guesses = $state(Array(5).fill({ guess: null, score: null }));
+  let answerCount = $state(0);
   let userInput = $state('');
 
   const formatString = (str) => str.replace(/\W/g, '').toLowerCase().trim();
@@ -53,11 +54,13 @@
       guessObject.score = remainingWords.find(({ word }) => word === formattedGuess).score ?? 0;
     }
 
-    guesses = [...guesses, guessObject];
+    guesses[answerCount] = guessObject;
+    answerCount += 1;
     userInput = '';
+    document.querySelector(`[data-input-id="${answerCount}"]`)?.focus();
 
     // persist guesses to local storage so they aren't lost on refresh
-    window.localStorage.setItem('guessesV2', JSON.stringify(guesses));
+    window.localStorage.setItem('guesses', JSON.stringify(guesses));
   };
 
   /**
@@ -117,54 +120,43 @@
 
   onMount(() => {
     const storageId = window.localStorage.getItem('id') || '';
-    const storageGuesses = window.localStorage.getItem('guessesV2') || '';
+    const storageGuesses = window.localStorage.getItem('guesses') || '';
 
     // refresh the game state if the word has changed
     if (synonyms.id !== storageId) {
-      window.localStorage.removeItem('guessesV2');
+      window.localStorage.removeItem('guesses');
       window.localStorage.removeItem('id');
 
-      guesses = [];
-      window.localStorage.setItem('guessesV2', JSON.stringify(guesses));
+      guesses = Array(5).fill({ guess: null, score: null });
+      answerCount = 0;
+      window.localStorage.setItem('guesses', JSON.stringify(guesses));
       window.localStorage.setItem('id', synonyms.id);
     }
 
     if (storageGuesses) {
-      guesses = JSON.parse(window.localStorage.getItem('guessesV2'));
+      guesses = JSON.parse(window.localStorage.getItem('guesses'));
+      answerCount = guesses.filter(({ score }) => score !== null).length;
     }
   });
+
+  $effect(() => {
+    const activeInput = document.querySelector(`[data-input-id="${answerCount}"]`);
+    if (activeInput) {
+      activeInput.focus();
+    }
+  })
 </script>
 
 <svelte:head>
   <title>The Synonym Game by indoorkeith</title>
 </svelte:head>
 
-<main class="flex flex-col w-full xl:w-1/2 mx-auto p-20">
-  {#if guesses.length < 5}
-    <form
-      class="flex flex-col items-center gap-4 w-full mx-auto mt-8 lg:w-1/3"
-      onsubmit={submitGuess}
-    >
-      <label for="guess-input" class="hidden">
-        Guess the word:
-      </label>
-      <div id="guess" class="w-full mx-auto relative">
-        <input
-          type="text"
-          id="guess-input"
-          placeholder="Enter a word"
-          class="w-full bg-transparent border-0
-          outline-none text-center p-2 text-2xl focus:placeholder:opacity-0
-          transition-all duration-300"
-          bind:value={userInput}
-        />
-      </div>
-    </form>
-  {:else}
+<main class="flex flex-col w-full max-w-3xl mx-auto p-8">
+  {#if guesses.filter(({ score }) => score !== null).length >= 5}
     {@const totalScore = guesses.reduce((acc, { score }) => acc + score, 0)}
-    <p class="text-center text-2xl mt-8">Your total score is {totalScore}!</p>
+    <p class="text-center text-2xl">You scored <b>{totalScore}</b> points!</p>
     <button
-      class="text-center mx-auto w-1/3 mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300"
+      class="text-center mx-auto w-[300px] mt-4 px-4 py-2 bg-zinc-300 text-zinc-700 font-bold rounded-full hover:bg-zinc-100 transition-colors duration-300"
       onclick={shareResults}
     >
       Share your results
@@ -172,7 +164,7 @@
   {/if}
 
   <!-- Definition -->
-  <p class="p-2 mt-5 w-full xl:w-1/3 mx-auto">
+  <p class="p-2 mt-5 w-full mx-auto">
     <span>
       <em>{synonyms.wordType}</em>. {synonyms.definition}.
     </span>
@@ -183,29 +175,50 @@
     {/if}
   </p>
 
-  <div class="mt-8 w-auto">
-    {#each guesses as { guess, score }, index}
-      <div class="flex items-center gap-2">
-        <span>{index + 1}. {guess}</span>
-        {#if score > 0}
-          <span class="text-green-500">+{score}</span>
-        {:else}
-          <span class="text-red-500">{score}</span>
-        {/if}
-      </div>
+  <div class="mt-8 w-full md:w-1/2 mx-auto">
+    <!-- 5 empty pills that get filled with each guess -->
+    {#each guesses as { guess = null, score = null }, index}
+      {#if index === answerCount}
+        <form onsubmit={submitGuess}>
+          <label for="guess-input" class="hidden">
+            Guess the word:
+          </label>
+          <div id="guess" class="w-full mx-auto relative">
+            <input
+              type="text"
+              id="guess-input"
+              placeholder="Enter a word"
+              data-input-id={index}
+              class="w-full h-12 mb-4 bg-zinc-100 text-zinc-700 rounded-full px-4 text-center focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2"
+              bind:value={userInput}
+            />
+          </div>
+        </form>
+      {:else if guess === null}
+        <div class="w-full h-12 mb-4 bg-zinc-700 rounded-full"></div>
+      {:else}
+        <div class="w-full h-12 mb-4 rounded-full flex items-center justify-center gap-2 px-4"
+          class:bg-green-700={score > 0}
+          class:bg-zinc-700={score === 0}
+        >
+          <span>{guess}</span>
+          {#if score > 0}
+            <span class="text-green-100">+{score}</span>
+          {/if}
+        </div>
+      {/if}
     {/each}
   </div>
 
   <!-- possible words in 1 column going downward with grid -->
-  {#if guesses.length >= 5}
-    <h2 class="text-center mt-8">Possible words:</h2>
-    <div class="flex flex-col gap-4 mt-4">
-      {#each synonyms.scoredWords as { word, score }}
-        <div class="flex items-center gap-2">
+  {#if answerCount >= 5}
+    <h2 class="text-center mt-8 text-2xl font-bold">Possible words:</h2>
+    <div class="flex flex-col gap-4 mt-4 text-center w-full sm:w-1/2 mx-auto">
+      {#each synonyms.scoredWords as { word, score }, index}
+        <!-- give every other div a .5 transparent background color -->
+        <div class="flex items-center p-2 justify-between" class:test={index % 2 !== 0}>
           <span>{word}</span>
-          {#if score > 0}
-            <span class="text-green-500">+{score}</span>
-          {/if}
+          <span class="text-green-500">+{score}</span>
         </div>
       {/each}
     </div>
@@ -213,32 +226,8 @@
 </main>
 
 <style>
-  #guess::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: calc(50%);
-    transform: translateX(-50%);
-    width: 100%;
-    height: 2px;
-    @apply bg-slate-400;
-  }
-
-  #guess::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: calc(50%);
-    transform: translateX(-50%);
-    width: 0;
-    height: 2px;
-    @apply bg-white;
-    transition: width 0.3s ease;
-  }
-
-  #guess:focus-within::after {
-    width: 100%;
-    height: 3px;
+  .test {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 </style>
 
