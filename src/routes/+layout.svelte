@@ -32,7 +32,7 @@
 </script>
 
 <header class="w-full p-5 h-auto">
-  <nav class="w-full">
+  <nav class="w-full md:w-2/3 mx-auto">
     <div class="flex flex-wrap justify-between">
       <div class="font-semibold">What's the word?</div>
       <button command="show-modal" commandfor="help" class="background-transparent text-zinc-200">
@@ -40,7 +40,7 @@
       </button>
     </div>
   </nav>
-  <dialog id="help" class="rounded-md p-10 bg-zinc-800 w-1/3 text-sm text-zinc-200">
+  <dialog id="help" class="rounded-md p-10 bg-zinc-800 w-full md:w-2/3 text-sm text-zinc-200 backdrop-blur-md backdrop-opacity-40">
     <h2 class="text-lg font-semibold mb-2">How to Play</h2>
     <p class="mb-4">
       Guess a word that fits the definition and example provided.
@@ -77,3 +77,9 @@
     {/if}
   {/each}
 </div>
+
+<style>
+  dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+</style>
