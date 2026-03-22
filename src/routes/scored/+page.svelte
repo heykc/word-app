@@ -107,11 +107,11 @@
     </form>
   {:else}
     {@const totalScore = guesses.reduce((acc, { score }) => acc + score, 0)}
-    <p class="text-center mt-8">Your total score is {totalScore}!</p>
+    <p class="text-center text-2xl mt-8">Your total score is {totalScore}!</p>
   {/if}
 
   <!-- Definition -->
-  <p class="col-start-2 columns-1 p-2 mt-5 w-full xl:w-1/3 mx-auto">
+  <p class="p-2 mt-5 w-full xl:w-1/3 mx-auto">
     <span>
       <em>{synonyms.wordType}</em>. {synonyms.definition}.
     </span>
