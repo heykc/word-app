@@ -24,19 +24,19 @@ export async function load({ fetch }) {
 
   // sometimes thesaurus api doesn't have an entry for the word
   // so getSynonyms will recursively call itself until it finds a word
-  const randomWordRes = await fetch('/api/word/synonyms');
-  const randomWord = await randomWordRes.json();
+  const synonymsRes = await fetch('/api/word/synonyms');
+  const synonyms = await synonymsRes.json();
 
   await fetch('/api/cache', {
     method: 'POST',
     body: JSON.stringify({
-      selectedWord: randomWord,
+      selectedWord: synonyms,
       createdAt: dayjsLA.toISOString(),
     }),
   });
 
   return {
     status: 200,
-    body: { selectedWord: randomWord }
+    body: { selectedWord: synonyms }
   };
 }
