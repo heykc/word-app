@@ -151,10 +151,10 @@
   <title>The Synonym Game by indoorkeith</title>
 </svelte:head>
 
-<main class="flex flex-col w-full max-w-3xl mx-auto p-10">
+<main class="flex flex-col w-full max-w-3xl mx-auto p-8">
   {#if guesses.filter(({ score }) => score !== null).length >= 5}
     {@const totalScore = guesses.reduce((acc, { score }) => acc + score, 0)}
-    <p class="text-center text-2xl mt-8">Your total score is {totalScore}!</p>
+    <p class="text-center text-2xl">You scored <b>{totalScore}</b> points!</p>
     <button
       class="text-center mx-auto w-[300px] mt-4 px-4 py-2 bg-zinc-300 text-zinc-700 font-bold rounded-full hover:bg-zinc-100 transition-colors duration-300"
       onclick={shareResults}
