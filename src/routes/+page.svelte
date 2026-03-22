@@ -136,7 +136,7 @@
 </script>
 
 <svelte:head>
-  <title>Word Test</title>
+  <title>The Synonym Game by indoorkeith</title>
 </svelte:head>
 
 <main class="flex flex-col w-full xl:w-1/2 mx-auto p-20">
