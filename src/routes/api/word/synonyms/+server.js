@@ -91,7 +91,6 @@ const parseSynResponse = (res) => {
     definition,
     example,
     wordType,
-    words,
     scoredWords,
   };
 };
