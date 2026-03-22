@@ -6,7 +6,7 @@
 
 
   let { data } = $props();
-  let synonyms = $derived(data?.body?.selectedWord);
+  let synonyms = $derived(data?.body?.synonyms);
   let guesses = $state([]);
   let userInput = $state('');
 

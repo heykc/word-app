@@ -18,7 +18,7 @@ export async function load({ fetch }) {
   if (cache && !dayjsLA.isAfter(dayjs(cache.createdAt), 'day')) {
     return {
       status: 200,
-      body: { selectedWord: cache.selectedWord }
+      body: { synonyms: cache.synonyms }
     };
   }
 
@@ -30,13 +30,13 @@ export async function load({ fetch }) {
   await fetch('/api/cache', {
     method: 'POST',
     body: JSON.stringify({
-      selectedWord: synonyms,
+      synonyms,
       createdAt: dayjsLA.toISOString(),
     }),
   });
 
   return {
     status: 200,
-    body: { selectedWord: synonyms }
+    body: { synonyms }
   };
 }
