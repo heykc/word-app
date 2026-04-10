@@ -74,8 +74,8 @@ const parseSynResponse = (res) => {
      */
     .filter((w) =>
       /^\w+$/.test(w)
-      // && !definition.includes(w)
-      // && !example.includes(w)
+      && !definition.includes(w)
+      && !example.includes(w)
     );
   /**
    * The part of speech can be directly from `fl`, but if the `sls` array contains a phrase like "X of Y", we can extract "X" as the word type and combine it with `fl` for more specificity.

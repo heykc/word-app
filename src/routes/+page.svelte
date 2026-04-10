@@ -7,7 +7,8 @@
 
   let { data } = $props();
   let synonyms = $derived(data?.body?.synonyms);
-  let guesses = $state(Array(5).fill({ guess: null, score: null }));
+  let guesses = $state([]);
+  let maxGuesses = $derived.by(() => Math.min(5, synonyms?.scoredWords?.length ?? 0));
   let answerCount = $state(0);
   let userInput = $state('');
 
@@ -25,6 +26,13 @@
 
     if (guesses.some(({ guess }) => guess === str)) {
       addToast(`You already guessed "${str}".`);
+      return false;
+    }
+
+    // regex to see if the guess exists in the definition or example, ignoring punctuation, case and whether the word exists inside of a longer word.
+    const regex = new RegExp(`\\b${str}\\b`, 'i');
+    if (regex.test(synonyms.definition) || regex.test(synonyms.example)) {
+      addToast(`"${str}" is part of the definition or example. Try a different word.`);
       return false;
     }
 
@@ -127,7 +135,7 @@
       window.localStorage.removeItem('guesses');
       window.localStorage.removeItem('id');
 
-      guesses = Array(5).fill({ guess: null, score: null });
+      guesses = Array(maxGuesses).fill({ guess: null, score: null });
       answerCount = 0;
       window.localStorage.setItem('guesses', JSON.stringify(guesses));
       window.localStorage.setItem('id', synonyms.id);
@@ -152,7 +160,7 @@
 </svelte:head>
 
 <main class="flex flex-col w-full max-w-3xl mx-auto p-8">
-  {#if guesses.filter(({ score }) => score !== null).length >= 5}
+  {#if answerCount >= maxGuesses}
     {@const totalScore = guesses.reduce((acc, { score }) => acc + score, 0)}
     <p class="text-center text-2xl">You scored <b>{totalScore}</b> points!</p>
     <button
@@ -177,7 +185,7 @@
 
   <div class="mt-8 w-full md:w-1/2 mx-auto">
     <!-- 5 empty pills that get filled with each guess -->
-    {#each guesses as { guess = null, score = null }, index}
+    {#each guesses as { guess, score }, index}
       {#if index === answerCount}
         <form onsubmit={submitGuess}>
           <label for="guess-input" class="hidden">
@@ -188,6 +196,7 @@
               type="text"
               id="guess-input"
               placeholder="Enter a word"
+              autocomplete="off"
               data-input-id={index}
               class="w-full h-12 mb-4 bg-zinc-100 text-zinc-700 rounded-full px-4 text-center focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2"
               bind:value={userInput}
@@ -211,7 +220,7 @@
   </div>
 
   <!-- possible words in 1 column going downward with grid -->
-  {#if answerCount >= 5}
+  {#if answerCount >= maxGuesses}
     <h2 class="text-center mt-8 text-2xl font-bold">Possible words:</h2>
     <div class="flex flex-col gap-4 mt-4 text-center w-full sm:w-1/2 mx-auto">
       {#each synonyms.scoredWords as { word, score }, index}
