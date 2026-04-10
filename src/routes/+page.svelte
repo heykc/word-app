@@ -188,6 +188,7 @@
               type="text"
               id="guess-input"
               placeholder="Enter a word"
+              autocomplete="off"
               data-input-id={index}
               class="w-full h-12 mb-4 bg-zinc-100 text-zinc-700 rounded-full px-4 text-center focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2"
               bind:value={userInput}
