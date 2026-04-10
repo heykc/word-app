@@ -29,6 +29,13 @@
       return false;
     }
 
+    // regex to see if the guess exists in the definition or example, ignoring punctuation, case and whether the word exists inside of a longer word.
+    const regex = new RegExp(`\\b${str}\\b`, 'i');
+    if (regex.test(synonyms.definition) || regex.test(synonyms.example)) {
+      addToast(`"${str}" is part of the definition or example. Try a different word.`);
+      return false;
+    }
+
     return true;
   };
 
